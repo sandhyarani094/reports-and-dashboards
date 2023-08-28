@@ -2,11 +2,11 @@
 
 import { useRouter } from 'next/router';
 import React, { useContext, useState } from 'react';
-import AppConfig from '../../../layout/AppConfig';
+import AppConfig from '../../../app/layout/AppConfig';
 import { Checkbox } from 'primereact/checkbox';
 import { Button } from 'primereact/button';
 import { Password } from 'primereact/password';
-import { LayoutContext } from '../../../layout/context/layoutcontext';
+import { LayoutContext } from '../../../app/context/layoutcontext';
 import { InputText } from 'primereact/inputtext';
 import { classNames } from 'primereact/utils';
 import { Page } from '../../../types/types';
@@ -52,7 +52,7 @@ const LoginPage: Page = () => {
                                     Forgot password?
                                 </a>
                             </div>
-                            <Button label="Sign In" className="w-full p-3 text-xl" onClick={() => router.push(RouterPath.Dashboard)}></Button>
+                            <Button label="Sign In" className="w-full p-3 text-xl" onClick={() => router.push(RouterPath.Connection)}></Button>
                         </div>
                     </div>
                 </div>

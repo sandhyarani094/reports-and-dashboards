@@ -8,8 +8,8 @@ import { RadioButton, RadioButtonChangeEvent } from 'primereact/radiobutton';
 import { Sidebar } from 'primereact/sidebar';
 import { classNames } from 'primereact/utils';
 import React, { useContext, useEffect, useState } from 'react';
-import { AppConfigProps, LayoutConfig, LayoutState } from '../types/types';
-import { LayoutContext } from './context/layoutcontext';
+import { AppConfigProps, LayoutConfig, LayoutState } from '../../types/types';
+import { LayoutContext } from '../context/layoutcontext';
 
 const AppConfig = (props: AppConfigProps) => {
     const [scales] = useState([12, 13, 14, 15, 16]);

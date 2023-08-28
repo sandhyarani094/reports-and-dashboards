@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/router';
 import React from 'react';
-import AppConfig from '../../../layout/AppConfig';
+import AppConfig from '../../../app/layout/AppConfig';
 import { Button } from 'primereact/button';
 import type { Page } from '../../../types/types';
 
