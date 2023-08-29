@@ -10,3 +10,26 @@ export class RouterPath {
 
  
 }
+
+export const pathList = [
+    {
+        pathName: "connection",
+        displayName: "Connection"
+    },
+    {
+        pathName: "cube",
+        displayName: "Cube"
+    },
+    {
+        pathName: "components",
+        displayName: "Components"
+    },
+    {
+        pathName: "dashboard",
+        displayName: "Dashboard"
+    },
+    {
+        pathName: "createConnection",
+        displayName: "Create Connection"
+    }
+]

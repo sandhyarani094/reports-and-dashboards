@@ -13,6 +13,11 @@ import { useRouter } from 'next/router';
 import { RouterPath } from '@/shared/constants/router';
 import LoginPage from './auth/login';
 import { Card } from 'primereact/card';
+import { ToastProvider } from '@/app/context/toasterContext';
+import Link from 'next/link';
+import { BreadCrumb } from 'primereact/breadcrumb';
+import { getPathNames } from '@/shared/constants/services/utilService';
+import { usePathname } from 'next/navigation';
 
 type Props = AppProps & {
     Component: Page;
@@ -20,8 +25,17 @@ type Props = AppProps & {
 
 export default function MyApp({ Component, pageProps }: Props) {
     const router = useRouter();
-    useEffect(()=> {
-        if(router.pathname == "/") {
+    const path = usePathname();
+    const allPaths = () => {
+        let data = getPathNames(path);
+        return data.map((element : any) => {
+          return {
+            template: <Link href={element.pathName} style={{ color: "black" }}>{element.displayName}</Link>
+          }
+        })
+      }
+    useEffect(() => {
+        if (router.pathname == "/") {
             router.push(RouterPath.LOGIN)
         }
     }, [router, router.pathname])
@@ -31,11 +45,18 @@ export default function MyApp({ Component, pageProps }: Props) {
     } else {
         return (
             <LayoutProvider>
-                <Layout>
-                    <Card>
-                    <Component {...pageProps} />
-                    </Card>
-                </Layout>
+                <ToastProvider>
+                    <Layout>
+                        <Card>
+                            <div className="grid">
+                                <div className="col-12">
+                                    <BreadCrumb className='mb-3' model={allPaths()} home={{ template: <Link className='pi pi-home' href={RouterPath.Connection} style={{ color: "black" }}></Link> }} />
+                                </div>
+                            </div>
+                            <Component {...pageProps} />
+                        </Card>
+                    </Layout>
+                </ToastProvider>
             </LayoutProvider>
         );
     }
