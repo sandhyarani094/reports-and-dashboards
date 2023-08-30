@@ -1,39 +1,58 @@
 "use client"
-import { Form, Formik } from 'formik';
-import { useRouter } from 'next/navigation';
+import { RouterPath } from '@/shared/constants/router';
+import { Form, Formik, FormikHelpers } from 'formik';
+import { useRouter } from 'next/router';
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
 import { InputText } from 'primereact/inputtext';
-import React from 'react'
+import React, { useEffect , useState } from 'react'
+import { Value } from 'sass';
 
 
 
-const CreateConnectionPage = () => {
+const CreateConnectionPage = () => {   
+
+    
 
     const router = useRouter();
+    const editData = router.query.editData as string;
+    const [initialValues, setInitialValues] = useState({
+        id:'',
+        connectionName: '',
+        driverType: [],
+        host: '',
+        port: '',
+        username: '',
+        password: '',
+        schemaName: '',
+        serviceId: ''
+      });
+
+      useEffect(() => {
+        const editDataParsed = JSON.parse(editData || '{}');
+        console.log("Parsed editData:", editDataParsed); 
+        setInitialValues(editDataParsed);
+      }, [editData]);
+      
     const handleSave = (values: any) => {
-        console.log("Form values:", values); // Print the form values to the console
-        // Add your save logic here
+        console.log("Form values:", values);
+        const existingConnections = JSON.parse(localStorage.getItem('connections') || '[]');
+        existingConnections.push(values);
+        localStorage.setItem('connections', JSON.stringify(existingConnections));
+        router.push(RouterPath.Connection)
+        
     };
 
+    
+
+    
     return (
         <>
             <h5>
                 Create Connection
             </h5>
             <Formik
-                initialValues={
-                    {
-                        connectionName: '',
-                        dbType: [],
-                        serverAddress: '',
-                        port: '',
-                        userId: '',
-                        password: '',
-                        schemeName: '',
-                        serviceId: ''
-                    }
-                }
+                 initialValues={initialValues}
                 onSubmit={(values, formikHelpers) => {
                     handleSave(values); // Always call handleSave for new data
                 }}
@@ -65,35 +84,49 @@ const CreateConnectionPage = () => {
                                     </div>
                                     <div className="col-6 field ">
                                         <label htmlFor="name" className="ml-1">
-                                            DB Type
+                                            Driver Type
                                         </label>
                                         <Dropdown
-                                            name="dbType"
+                                            name="driverType"
                                             options={[
-                                                { label: 'SQL', value: 'SQL' },
-                                                { label: 'POSTGRES', value: 'POSTGRES' },
-                                                { label: 'MARIA DB', value: 'MARIA DB' },
-                                                { label: 'MONGO DB', value: 'MONGO DB' }
+                                                { label: 'MySQL', value: 'MySQL' },
+                                                { label: 'MariaDB', value: 'MariaDB' },
+                                                { label: 'Oracle', value: 'Oracle' },
+                                                { label: 'PostgreSQL', value: 'PostgreSQL' }
                                             ]}
-                                            value={values.dbType}
+                                            value={values.driverType}
                                             optionLabel="label"
                                             optionValue="value"
                                             onChange={handleChange}
-                                            placeholder="DB Type"
+                                            placeholder="Driver"
                                             className={'w-full'}
                                             showClear
+                                            
                                         />
 
                                     </div>
                                     <div className="col-6 field ">
                                         <label htmlFor="name" className="ml-1">
-                                            Server Address
+                                            Schema Name
                                         </label>
                                         <InputText
-                                            id="serverAddress"
-                                            name="serverAddress"
+                                            id="schemaName"
+                                            name="schemaName"
                                             className={'w-full'}
-                                            value={values.serverAddress}
+                                            value={values.schemaName}
+                                            placeholder="schemeName"
+                                            onChange={handleChange}
+                                        />
+                                    </div>
+                                    <div className="col-6 field ">
+                                        <label htmlFor="name" className="ml-1">
+                                           Host
+                                        </label>
+                                        <InputText
+                                            id="host"
+                                            name="host"
+                                            className={'w-full'}
+                                            value={values.host}
                                             placeholder="Connection Name"
                                             onChange={handleChange}
                                         />
@@ -114,13 +147,13 @@ const CreateConnectionPage = () => {
 
                                     <div className="col-6 field ">
                                         <label htmlFor="name" className="ml-1">
-                                            User ID
+                                            User name
                                         </label>
                                         <InputText
-                                            id="port"
-                                            name="userId"
+                                            id="username"
+                                            name="username"
                                             className={'w-full'}
-                                            value={values.userId}
+                                            value={values.username}
                                             placeholder=" userId"
                                             onChange={handleChange}
                                         />
@@ -138,19 +171,7 @@ const CreateConnectionPage = () => {
                                             onChange={handleChange}
                                         />
                                     </div>
-                                    <div className="col-6 field ">
-                                        <label htmlFor="name" className="ml-1">
-                                            Schema Name
-                                        </label>
-                                        <InputText
-                                            id="schemeName"
-                                            name="schemeName"
-                                            className={'w-full'}
-                                            value={values.schemeName}
-                                            placeholder="schemeName"
-                                            onChange={handleChange}
-                                        />
-                                    </div>
+                                    
                                     <div className="col-6 field ">
                                         <label htmlFor="name" className="ml-1">
                                             Service Id

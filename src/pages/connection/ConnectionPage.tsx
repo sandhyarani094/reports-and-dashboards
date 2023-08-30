@@ -1,18 +1,34 @@
 "use client"
 import { RouterPath } from '@/shared/constants/router';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 import { InputText } from 'primereact/inputtext';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 const ConnectionPage = () => {
+
+  const [data, setData] = useState([]);
+  const router = useRouter();
+
+
   const [globalFilter, setGlobalFilter] = useState("");
-  const [columns, setColumns] = useState([
-    { field: 'Database 1', header: 'ID' },
-    { field: 'API 1', header: 'Connection Name' },
-    { field: 'File 1', header: 'Type' }
-  ]);
+
+  const columns = [
+    { field: 'connectionName', header: 'Connection Name' },
+    { field: 'driverType', header: 'Driver Type' },
+    {field:'action' , header:'Action'}
+  ];
+
+  useEffect(() => {
+    // Retrieve data from localStorage
+    const storedData = JSON.parse(localStorage.getItem('connections') || '[]');
+    setData(storedData);
+  }, []);
+
+
+
 
   const dataTableHeader = () => {
     return (
@@ -40,30 +56,55 @@ const ConnectionPage = () => {
     );
   };
 
+  const handleEdit = (rowData: any) => {
+    // Navigate to Create Connection page with rowData as query parameter
+    router.push({
+      pathname: RouterPath.CREATE_CONNECTION,
+      query: { editData: JSON.stringify(rowData) },
+    });
+  };
 
 
 
   return (
-    <div >
+    <div>
       {dataTableHeader()}
       <div className="grid">
         <div className="col-12">
-          <DataTable value={columns}
-          >
-            {columns.map((column, index) => {
-              return (
-                <Column key={index} field={column.field} header={column.header} />
-              )
-            })}
-            {/* <Column field="id" header="ID" />
-        <Column field="connectionName" header="Connection Name" />
-        <Column field="type" header="Type" /> */}
+          <DataTable value={data} 
+            globalFilter={globalFilter}>
+            {columns.map((column, index) => (
+              <Column 
+                key={index} 
+                field={column.field} 
+                header={column.header} 
+                body={
+                  column.field === 'action'
+                    ? (rowData) => (
+                        <div>
+                          <i
+                          
+                            className="pi pi-pencil mr-2" 
+                            style={{color:'slateblue'}}
+                            onClick={() => handleEdit(rowData)}
+                          />
+                          <i
+                            className="pi pi-trash p-button-danger"
+                            style={{color:'red'}}
+                            // onClick={() => handleDelete(rowData)}
+                          />
+                        </div>
+                      )
+                    : (rowData) => rowData[column.field]
+                }
+              />
+            ))}
           </DataTable>
         </div>
       </div>
-
     </div>
-  )
-}
+  );
+};
+
 
 export default ConnectionPage;
