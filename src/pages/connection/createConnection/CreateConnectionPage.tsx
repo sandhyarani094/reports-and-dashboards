@@ -17,22 +17,12 @@ const CreateConnectionPage = () => {
     const router = useRouter();
     const editData = router.query.editData as string;
     const { toastRef } = useContext(ToastContext);
-    const [initialValues, setInitialValues] = useState({
-        id:'',
-        connectionName: '',
-        driverType: [],
-        host: '',
-        port: '',
-        username: '',
-        password: '',
-        schemaName: '',
-        serviceId: ''
-      });
+    const [connectionData, setConnectionData] = useState<Connection>(new Connection());
 
       useEffect(() => {
         const editDataParsed = JSON.parse(editData || '{}');
         console.log("Parsed editData:", editDataParsed); 
-        setInitialValues(editDataParsed);
+        setConnectionData(editDataParsed);
       }, [editData]);
       
     const handleSave = (values: any) => {
@@ -67,8 +57,7 @@ const CreateConnectionPage = () => {
                 Create Connection
             </h5>
             <Formik
-                initialValues={initialValues}
-               // initialValues={new Connection()}
+               initialValues={new Connection()}
                 onSubmit={(values, formikHelpers) => {
                     handleSave(values); // Always call handleSave for new data
                 }}
@@ -149,7 +138,7 @@ const CreateConnectionPage = () => {
                                             placeholder="schemeName"
                                             onChange={handleChange}
                                         />
-                                         {getErrorMessageOnValidation(errors, touched, 'schemeName')}
+                                         {getErrorMessageOnValidation(errors, touched, 'schemaName')}
                                     </div>
                                     <div className="col-6 field ">
                                         <label htmlFor="name" className="ml-1">

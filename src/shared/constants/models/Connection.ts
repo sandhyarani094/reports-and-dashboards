@@ -1,10 +1,11 @@
 export class Connection {
-    connectionName: string = "";
-    dbType: string = "";
-    serverAddress: string = "";
-    port: string = "";
-    userId: string = "";
-    password: string = "";
-    schemeName: string = "";
-    serviceId: string = "";
+    id: string =""
+    connectionName: string =""
+    driverType: string =""
+    host: string =""
+    port: string =""
+    username: string =""
+    password: string =""
+    schemaName: string =""
+    serviceId: string =""
 }

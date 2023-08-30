@@ -6,12 +6,15 @@ import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 import { InputText } from 'primereact/inputtext';
-import React, { useEffect, useState } from 'react'
+import { showToaster } from '@/shared/constants/services/ToastService';
+import React, { useEffect, useState , useContext } from 'react';
+import { confirmDialog } from "primereact/confirmdialog";
+import { ToastContext } from '@/app/context/toasterContext';
 const ConnectionPage = () => {
 
   const [data, setData] = useState([]);
   const router = useRouter();
-
+  const { toastRef } = useContext(ToastContext);
 
   const [globalFilter, setGlobalFilter] = useState("");
 
@@ -26,9 +29,6 @@ const ConnectionPage = () => {
     const storedData = JSON.parse(localStorage.getItem('connections') || '[]');
     setData(storedData);
   }, []);
-
-
-
 
   const dataTableHeader = () => {
     return (
@@ -66,12 +66,35 @@ const ConnectionPage = () => {
 
 
 
+  const handleDelete = (rowData: any) => {
+    confirmDialog({
+      message: `Do you want to delete this Matching Rule ?`,
+      header: "Delete Confirmation",
+      icon: "pi pi-info-circle",
+      acceptClassName: "p-button-danger",
+      rejectClassName: 'p-button-secondary',
+      accept: () => {
+        showToaster(toastRef, 'success', 'Successfully', 'Connection Deleted Successfully');
+      
+      },
+      reject: () => {
+        showToaster(toastRef, 'success', 'Successfully', 'Connection could not Deleted Successfully');
+      },
+    });
+   
+};
+
   return (
     <div>
       {dataTableHeader()}
       <div className="grid">
         <div className="col-12">
           <DataTable value={data} 
+             paginator
+             rows={5}
+             rowsPerPageOptions={[5, 10, 25, 50]}
+             scrollable={true}
+             scrollHeight={"20rem"}
             globalFilter={globalFilter}>
             {columns.map((column, index) => (
               <Column 
@@ -91,7 +114,7 @@ const ConnectionPage = () => {
                           <i
                             className="pi pi-trash p-button-danger"
                             style={{color:'red'}}
-                            // onClick={() => handleDelete(rowData)}
+                            onClick={() => handleDelete(rowData)}
                           />
                         </div>
                       )

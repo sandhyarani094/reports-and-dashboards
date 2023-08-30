@@ -1,0 +1,9 @@
+{
+    "data": [ 
+        {"name": "CRM_DEV", "code": "AF"}, 
+        {"name": "CRM", "code": "AX"}, 
+        {"name": "CRM_DB", "code": "AL"}, 
+        {"name": "CRM_TEST", "code": "DZ"}, 
+        {"name": "CRM_DATBASE", "code": "AS"}
+    ]
+}
