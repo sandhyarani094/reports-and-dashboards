@@ -3,32 +3,19 @@ import { Button } from "primereact/button";
 import { Dropdown } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
 import React, { useEffect, useState, useContext } from "react";
-import { fetchData } from "@/pages/HttpServices/ConnectionService";
 
 interface DatasourceSelectionProps {
-    onNext: Function;
-    setActiveTab: Function;
+  setActiveTab: Function;
+  setActiveIndex: Function;
+  activeIndex: number;
 }
-const DatasourceSelection: React.FC<DatasourceSelectionProps> = ({ onNext , setActiveTab}) => {
+const DatasourceSelection: React.FC<DatasourceSelectionProps> = ({
+  setActiveTab,
+  setActiveIndex,
+  activeIndex,
+}) => {
   const [datasources, setDatasources] = useState([]);
 
-  useEffect(() => {
-    async function getData() {
-      try {
-        const data = await fetchData();
-        // Use the 'data' object from your API response
-        const datasourceOptions = data.data.map((item: any) => ({
-          label: item.name,
-          value: item.code,
-        }));
-        setDatasources(datasourceOptions);
-      } catch (error) {
-        console.error("err");
-      }
-    }
-
-    getData();
-  }, []);
   const [initialValues, setInitialValues] = useState({
     datasource: [],
     cubeName: "",
@@ -36,8 +23,8 @@ const DatasourceSelection: React.FC<DatasourceSelectionProps> = ({ onNext , setA
 
   const handleSave = (values: any) => {
     console.log(values);
-   
-    
+    setActiveIndex(activeIndex + 1); // Increment activeIndex
+    setActiveTab(true);
   };
   return (
     <div>
@@ -89,24 +76,13 @@ const DatasourceSelection: React.FC<DatasourceSelectionProps> = ({ onNext , setA
               </div>
               <div className="col-12 text-right">
                 <Button
-                  label="Save "
+                  label="Save  & Next"
                   type="submit"
                   className="ml-2"
                   size="small"
-                  onClick={()=>{
-                    handleSave(values)
-                  }}
-                />
-                <Button
-                  label="Next "
-                  type="button"
-                  className="ml-2"
-                  size="small"
                   onClick={() => {
-                    setActiveTab(true)
-                    onNext();
+                    handleSave(values);
                   }}
-                  outlined
                 />
               </div>
             </Form>

@@ -1,6 +1,5 @@
 import { Dropdown } from 'primereact/dropdown'
 import React, { useState } from 'react'
-import DroppableContainer from './DroppableContainer';
 
 const ComponentsPage = () => {
 

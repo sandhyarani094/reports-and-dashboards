@@ -1,16 +1,13 @@
-/* eslint-disable @next/next/no-img-element */
-
 import { useRouter } from 'next/router';
 import React, { useContext, useState } from 'react';
-import AppConfig from '../../../app/layout/AppConfig';
 import { Checkbox } from 'primereact/checkbox';
 import { Button } from 'primereact/button';
 import { Password } from 'primereact/password';
-import { LayoutContext } from '../../../app/context/layoutcontext';
 import { InputText } from 'primereact/inputtext';
 import { classNames } from 'primereact/utils';
 import { Page } from '../../../types/types';
 import { RouterPath } from '@/shared/constants/router';
+import { LayoutContext } from '@/common-layouts/context/layoutcontext';
 
 const LoginPage: Page = () => {
     const [password, setPassword] = useState('');

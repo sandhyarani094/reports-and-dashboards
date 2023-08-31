@@ -12,51 +12,42 @@ const CubePage = () => {
     new Array(7).fill(false)
   );
 
-  const handleNextStep = () => {
-    if (activeIndex < tabs.length - 1) {
-      setActiveIndex(activeIndex + 1);
-    }
-  };
-
-  const updateCompletedSteps = (index: any) => {
-    const newCompletedSteps = [...completedSteps];
-    newCompletedSteps[index] = true;
-    setCompletedSteps(newCompletedSteps);
-  };
-
   const tabs = [
     {
       label: "Datasource Selection",
       content: (
         <DatasourceSelection
-          onNext={handleNextStep}
           setActiveTab={setActiveTab}
+          activeIndex={activeIndex}
+          setActiveIndex={setActiveIndex}
         />
       ),
     },
-    {
-      label: "Fact Table",
-      content: <FactTable onNext={handleNextStep} />,
-    },
-    {
-      label: "Fact mapping Table",
-      content: <FactMappingDetail onNext={handleNextStep}/>,
-    },
+    // {
+    //   label: "Fact Details",
+    //   content: <FactTable
+    //   activeIndex={activeIndex}
+    //   setActiveIndex={setActiveIndex}/>,
+    // },
+    // {
+    //   label: "Fact  Table mapping",
+    //   content: <FactMappingDetail
+    //   activeIndex={activeIndex}
+    //   setActiveIndex={setActiveIndex} />,
+    // },
     {
       label: "Dimension",
       content: <FactDetail />,
     },
     {
-      label: "Mapping Table",
+      label: "Fact Dimension Mapping",
       content: <FactDetail />,
     },
   ];
 
   return (
     <div className="grid">
-      <div className="col-6">
-        <h5>Create Workflow Rule</h5>
-      </div>
+      <div className="col-6"></div>
       <div className="col-12">
         <Steps
           model={tabs}
@@ -64,7 +55,7 @@ const CubePage = () => {
           onSelect={(e) => setActiveIndex(e.index)}
           readOnly={isTabActive ? false : true}
         />
-        <div className="col-12">{tabs[activeIndex].content}</div>
+        <div className="col-12 p-5">{tabs[activeIndex].content}</div>
       </div>
     </div>
   );

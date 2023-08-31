@@ -2,10 +2,10 @@ import { Dropdown } from "primereact/dropdown";
 import React, { useState, useEffect } from "react";
 import { Button } from "primereact/button";
 
-interface FactMappingDetailProps  {
+interface FactMappingDetailProps {
   onNext: Function;
 }
-const FactMappingDetail : React.FC<FactMappingDetailProps> = ({ onNext }) => {
+const FactMappingDetail: React.FC<FactMappingDetailProps> = ({ onNext }) => {
   const [sourceTable, setSourceTableOption] = useState<string | null>(null);
   const [destinationTable, setDestinationTableOption] = useState<string | null>(
     null

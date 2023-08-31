@@ -1,9 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
 
 import React from 'react';
-import AppConfig from '../../app/layout/AppConfig';
 import Link from 'next/link';
 import { Page } from '../../types/types';
+import AppConfig from '@/common-layouts/layout/AppConfig';
 
 const NotFoundPage: Page = () => {
     return (
