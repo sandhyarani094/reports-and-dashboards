@@ -1,21 +1,37 @@
 import { Dropdown } from 'primereact/dropdown'
-import React, { useState } from 'react'
-import DroppableContainer from './DroppableContainer';
+import React, { useState, useRef } from 'react'
+import DraggableMeasurePage from '../DraggableMeasures/DraggableMeasurePage';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+
+interface Measure {
+  id: number;
+  value: string;
+}
 
 const ComponentsPage = () => {
 
   const [selectedOption, setSelectedOption] = useState(null);
+  const [droppedMeasures, setDroppedMeasures] = useState<string[]>([]);
 
   const dropdownOptions = [
     { label: 'Option 1', value: 'option1' },
     { label: 'Option 2', value: 'option2' },
     { label: 'Option 3', value: 'option3' }
   ];
-  const allMeasuresValues = [
-    'Measure Value 1',
-    'Measure Value 2',
-    'Measure Value 3'
+
+  const allMeasuresValues: Measure[] = [
+    { id: 1, value: 'Measure Value 1' },
+    { id: 2, value: 'Measure Value 2' },
+    { id: 3, value: 'Measure Value 3' },
+    { id: 4, value: 'Measure Value 4' },
   ];
+
+  const measurePageRef = useRef(null);
+  
+  const handleMeasureDrop = (droppedMeasure: string) => {
+    setDroppedMeasures([...droppedMeasures, droppedMeasure]);
+  };
 
   return (
     <div className='grid'>
@@ -41,16 +57,20 @@ const ComponentsPage = () => {
               <div className="col-12" style={{ background: '#0abaf2' }}>
                 <h6 style={{ color: 'white' }}>All Measures</h6>
               </div>
-              <div className="col-12">
-                {allMeasuresValues.map((measureValue, index) => (
-                  <input
-                    key={index}
-                    className='w-full'
-                    value={measureValue}
-                    readOnly
-                  />
-                ))}
-              </div>
+              <DndProvider backend={HTML5Backend}>
+                <div ref={measurePageRef} className="grid">
+                  <div className="col-12">
+                    {allMeasuresValues.map((measure, index) => (
+                      <DraggableMeasurePage
+                        key={index}
+                        measure={measure.value}
+                        measureIndex={index}
+                        onMeasureDrop={handleMeasureDrop}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </DndProvider>
               <div className="col-12" style={{ background: '#0abaf2' }}>
                 <h6 style={{ color: 'white' }}>Dimension</h6>
               </div>
