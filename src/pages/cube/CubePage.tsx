@@ -40,7 +40,8 @@ const CubePage = () => {
     },
     {
       label: "Fact mapping Table",
-      content: <FactMappingDetail onNext={handleNextStep}/>,
+      content: <FactMappingDetail setActiveIndex={setActiveIndex}
+        activeIndex={activeIndex} />,
     },
     {
       label: "Dimension",

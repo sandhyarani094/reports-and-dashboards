@@ -9,6 +9,7 @@ import 'primeflex/primeflex.css';
 import 'primeicons/primeicons.css';
 import '../styles/layout/layout.scss';
 import '../styles/layout/_config.scss';
+import '../styles/global/global.css'
 import { useRouter } from 'next/router';
 import { RouterPath } from '@/shared/constants/router';
 import LoginPage from './auth/login';

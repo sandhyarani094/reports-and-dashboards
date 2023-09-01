@@ -1,182 +1,242 @@
 import { Dropdown } from "primereact/dropdown";
 import React, { useState, useEffect } from "react";
 import { Button } from "primereact/button";
+import { Formik, Form, FormikHelpers } from "formik";
+import { FactMappingData } from "@/shared/constants/models/Cube";
+import * as Yup from 'yup';
+import { getErrorMessageOnValidation, isFormFieldInvalid } from "@/shared/constants/services/utilService";
+import { classNames } from "primereact/utils";
+import { ColumnMetaData, TableMetaData } from "@/shared/constants/models/TableMetaData";
+import { Column } from "primereact/column";
+import { DataTable } from "primereact/datatable";
 
-interface FactMappingDetailProps  {
-  onNext: Function;
+interface FactMappingDetailProps {
+  setActiveIndex: Function;
+  activeIndex: number;
 }
-const FactMappingDetail : React.FC<FactMappingDetailProps> = ({ onNext }) => {
-  const [sourceTable, setSourceTableOption] = useState<string | null>(null);
-  const [destinationTable, setDestinationTableOption] = useState<string | null>(
-    null
-  );
-  const [sourceColumn, setsourceColumnOptions] = useState<string | null>(null);
-  const [destinationColumn, setDestinationColumnOptions] = useState<
-    string | null
-  >(null);
-  const [relationOption, setRelationOption] = useState<string | null>(null);
-  const [selectedValues, setSelectedValues] = useState<any | null>(null);
+const FactMappingDetail: React.FC<FactMappingDetailProps> = ({
+  setActiveIndex,
+  activeIndex,
+}) => {
+  const [factTableMappingData, setFactTableMappingData] = useState<FactMappingData>(new FactMappingData());
+  const [factTableMappingArray, setFactTableMappingArray] = useState([]);
+  const [isAdded, setIsAdded] = useState(false);
 
-  const RelationOptions = {
-    inner_join: "INNER JOIN",
-    left_join: "LEFT JOIN",
-    right_join: "RIGHT JOIN",
-    full_join: "FULL JOIN",
-    cross_join: "CROSS JOIN",
-    self_join: "SELF JOIN",
-    natural_join: "NATURAL JOIN",
-  };
-
-  const dropdownOptions = [
-    { label: "Account", value: "Account" },
-    { label: "Lead", value: "Lead" },
-    { label: "Opportunity", value: "Opportunity" },
-    { label: "Contact", value: "Contact" },
+  const factMappingValidationSchema = Yup.object().shape({
+    sourceTable: Yup.object<TableMetaData>().shape({
+      tableName: Yup.string().required('Required'),
+    }),
+    relationOption: Yup.string().required('Required'),
+    destinationTable: Yup.object<TableMetaData>().shape({
+      tableName: Yup.string().required('Required'),
+    }),
+    sourceColumn: Yup.object<ColumnMetaData>().shape({
+      columnName: Yup.string().required('Required'),
+    }),
+    destinationColumn: Yup.object<ColumnMetaData>().shape({
+      columnName: Yup.string().required('Required'),
+    }),
+  })
+  const relationOptions = [
+    "INNER JOIN",
+    "LEFT JOIN",
+    "RIGHT JOIN",
+    "FULL JOIN",
+    "CROSS JOIN",
+    "SELF JOIN",
+    "NATURAL JOIN"
   ];
 
-  useEffect(() => {
-    const storedValues = JSON.parse(
-      localStorage.getItem("selectedValues") || "{}"
-    );
-    setSelectedValues(storedValues);
-  }, []);
+  const sourceTableOptions = [
+    { tableName: "Account", columns: [{ columnName: "Account Id" }, { columnName: "Account Name" }, { columnName: "Account Branch" }] },
+    { tableName: "Lead", columns: [{ columnName: "Contact Id" }, { columnName: "Contact Name" }, { columnName: "Contact Address" }] },
+    { tableName: "Opportunity", columns: [{ columnName: "Lead Id" }, { columnName: "Lead Name" }, { columnName: "Lead Status" }] },
+    { tableName: "Contact", columns: [{ columnName: "Opportunity Id" }, { columnName: "Opportunity Name" }, { columnName: "Stages" }] },
+  ];
+  const gridColumns = [
+    { field: "sourceTable", header: "Source Table" },
+    { field: "relationOption", header: "Relation Option" },
+    { field: "destinationTable", header: "Destination Table" },
+    { field: "sourceColumn", header: "Source Column" },
+    { field: "destinationColumn", header: "Destination Column" },
+  ];
 
-  const storeSelectedValues = () => {
-    const valuesToStore = {
-      sourceTable,
-      destinationTable,
-      sourceColumn,
-      destinationColumn,
-      relationOption,
-    };
-    localStorage.setItem("selectedValues", JSON.stringify(valuesToStore));
-    setSelectedValues(valuesToStore);
+  const handleSave = (values, formikHelpers: FormikHelpers<FactMappingData>) => {
+    setFactTableMappingData(values);
+    formikHelpers.resetForm();
+    // setIsAdded(true)
   };
-
-  const tableColumns: Record<string, string[]> = {
-    Account: ["Account Id", "Account Name", "Account Branch"],
-    Contact: ["Contact Id", "Contact Name", "Contact Address"],
-    Lead: ["Lead Id", "Lead Name", "Lead Status"],
-    Opportunity: ["Opportunity Id", "Opportunity Name", "Stages"],
-  };
-
-  const filteredColumnOptions = sourceTable
-    ? dropdownOptions.filter((option) => option.value !== sourceTable)
-    : [{ label: "Please Choose From Source Table first", value: null }];
-
-  const sourceColumnOptions = sourceTable
-    ? tableColumns[sourceTable].map((col: string) => ({
-        label: col,
-        value: col,
-      }))
-    : [{ label: "Please Choose From Source Table first", value: null }];
-
-  const destinationColumnOptions = destinationTable
-    ? tableColumns[destinationTable].map((col: string) => ({
-        label: col,
-        value: col,
-      }))
-    : [{ label: "Please Choose From Destination Table first", value: null }];
 
   return (
     <>
-      <div className="col-12">
-        <div className="grid">
-          <div className="col-5">
-            <div className="grid">
-              <div className="col-12">
-                <span style={{ color: "black" }}>Source Table</span>
-                <Dropdown
-                  className="w-full"
-                  placeholder="Choose from List"
-                  options={dropdownOptions}
-                  onChange={(e) => setSourceTableOption(e.value)}
-                  value={sourceTable}
-                />
-                <span>Relation</span>
-                <Dropdown
-                  className="w-full"
-                  placeholder="Choose One"
-                  options={Object.values(RelationOptions).map(
-                    (relationValue) => ({
-                      label: relationValue,
-                      value: relationValue,
-                    })
-                  )}
-                  onChange={(e) => setRelationOption(e.value)}
-                  value={relationOption}
-                />
-                <span>Destination Table</span>
-                <Dropdown
-                  className="w-full"
-                  placeholder="Choose One"
-                  options={filteredColumnOptions}
-                  onChange={(e) => setDestinationTableOption(e.value)}
-                  value={destinationTable}
-                />
-              </div>
+      {
+        !isAdded ?
+          <Formik
+            initialValues={factTableMappingData}
+            onSubmit={(values, formikHelpers) => {
+              handleSave(values, formikHelpers); // Always call handleSave for new data
+            }}
+            enableReinitialize={true}
+            validationSchema={factMappingValidationSchema}
+          >
+            {({ values, errors, touched, handleChange, handleReset }) => (
+              <Form>
+                <div className="grid">
+                  <div className="col-4 field required">
+                    <label htmlFor="name" className="ml-1">
+                      Source Table
+                    </label>
+                    <Dropdown
+                      name="sourceTable"
+                      className={classNames("w-full", {
+                        "p-invalid": isFormFieldInvalid(
+                          errors.sourceTable,
+                          touched.sourceTable
+                        ),
+                      })}
+                      placeholder="Choose from List"
+                      options={sourceTableOptions}
+                      optionLabel="tableName"
+                      onChange={handleChange}
+                      value={values.sourceTable}
+                    />
+                    {getErrorMessageOnValidation(errors, touched, 'sourceTable.tableName')}
+                  </div>
+                  <div className="col-4 field required">
+                    <label htmlFor="name" className="ml-1">
+                      Relation
+                    </label>
+                    <Dropdown
+                      name="relationOption"
+                      className={classNames("w-full", {
+                        "p-invalid": isFormFieldInvalid(
+                          errors.relationOption,
+                          touched.relationOption
+                        ),
+                      })}
+                      placeholder="Choose One"
+                      options={relationOptions}
+                      onChange={handleChange}
+                      value={values.relationOption}
+                    />
+                    {getErrorMessageOnValidation(errors, touched, 'relationOption')}
+                  </div>
+                  <div className="col-4 field required">
+                    <label htmlFor="name" className="ml-1">
+                      Destination Table
+                    </label>
+                    <Dropdown
+                      name="destinationTable"
+                      className={classNames("w-full", {
+                        "p-invalid": isFormFieldInvalid(
+                          errors.destinationTable,
+                          touched.destinationTable
+                        ),
+                      })}
+                      placeholder="Choose One"
+                      options={sourceTableOptions}
+                      optionLabel="tableName"
+                      emptyMessage="Please Choose From Source Table first"
+                      onChange={handleChange}
+                      value={values.destinationTable}
+                    />
+                    {getErrorMessageOnValidation(errors, touched, 'destinationTable.tableName')}
+                  </div>
+                  <div className="col-4 field required">
+                    <label htmlFor="name" className="ml-1">
+                      Source Column
+                    </label>
+                    <Dropdown
+                      name="sourceColumn"
+                      className={classNames("w-full", {
+                        "p-invalid": isFormFieldInvalid(
+                          errors.sourceColumn,
+                          touched.sourceColumn
+                        ),
+                      })}
+                      placeholder="Choose One"
+                      emptyMessage="Please Choose From Source Table first"
+                      options={values.sourceTable?.columns}
+                      optionLabel="columnName"
+                      onChange={handleChange}
+                      value={values.sourceColumn}
+                    />
+                    {getErrorMessageOnValidation(errors, touched, 'sourceColumn.columnName')}
+                  </div>
+                  <div className="col-4 field required">
+                    <label htmlFor="name" className="ml-1">
+                      Destination Column
+                    </label>
+                    <Dropdown
+                      name="destinationColumn"
+                      className={classNames("w-full", {
+                        "p-invalid": isFormFieldInvalid(
+                          errors.destinationColumn,
+                          touched.destinationColumn
+                        ),
+                      })}
+                      placeholder="Choose One"
+                      options={values.destinationTable?.columns}
+                      optionLabel="columnName"
+                      emptyMessage="Please Choose From Destination Table first"
+                      onChange={handleChange}
+                      value={values.destinationColumn}
+                    />
+                    {getErrorMessageOnValidation(errors, touched, 'destinationColumn.columnName')}
+                  </div>
+                  <div className="col-12 text-right">
+                    <Button
+                      label="Reset"
+                      type="reset"
+                      icon="pi pi-sync"
+                      className="mr-2"
+                      onClick={handleReset}
+                      outlined
+                    />
+                    <Button
+                      label="Add"
+                      type="submit"
+                    />
+                  </div>
+                </div>
+              </Form>
+            )}
+          </Formik> :
+          <>
+          <div className="col-12 text-right">
+            <Button
+              icon="pi pi-plus"
+              label="Add New"
+              size="small"
+              type="button"
+              onClick={()=> setIsAdded(false)}
+            />
             </div>
-          </div>
-          <div className="col-1"></div>
-          <div className="col-5">
-            <div className="grid">
-              <div className="col-12">
-                <span>Source Column</span>
-                <Dropdown
-                  className="w-full"
-                  placeholder="Choose One"
-                  options={sourceColumnOptions}
-                  onChange={(e) => setsourceColumnOptions(e.value)}
-                  value={sourceColumn}
-                />
-                <div style={{ marginTop: "60px" }} />
-                <span>Destination Column</span>
-                <Dropdown
-                  className="w-full"
-                  placeholder="Choose One"
-                  options={destinationColumnOptions}
-                  onChange={(e) => setDestinationColumnOptions(e.value)}
-                  value={destinationColumn}
-                />
-                <div style={{ marginTop: "10px" }}></div>
-                <Button
-                  label="Add"
-                  type="button"
-                  size="small"
-                  onClick={() => {
-                    storeSelectedValues();
+            <DataTable
+              value={factTableMappingArray}
+              dataKey="columnName"
+              metaKeySelection={true}
+              paginator
+              rows={5}
+              rowsPerPageOptions={[5, 10, 25, 50]}
+              scrollable={true}
+              scrollHeight={"12rem"}
+            >
 
-                    // Clear selected values
-                    setSourceTableOption(null);
-                    setDestinationTableOption(null);
-                    setsourceColumnOptions(null);
-                    setDestinationColumnOptions(null);
-                    setRelationOption(null);
-                  }}
+              {gridColumns.map((column, index) => (
+                <Column
+                  key={index}
+                  header={column.header}
+                  field={column.field}
+                  body={(rowData) => rowData[column.field]}
                 />
-              </div>
-            </div>
-          </div>
-        </div>
-        {/* {selectedValues && (
-        <div style={{ marginTop: '20px' }}>
-          <h4>Selected Values:</h4>
-          <pre>{JSON.stringify(selectedValues, null, 2)}</pre>
-        </div>
-      )} */}
-      </div>
-      <div className="col-12 text-right">
-        <Button
-          label="Next "
-          type="button"
-          className="ml-2"
-          size="small"
-          onClick={() => {
-            onNext();
-          }}
-          outlined
-        />
-      </div>
+              ))}
+
+            </DataTable>
+          </>
+
+      }
+
     </>
   );
 };
