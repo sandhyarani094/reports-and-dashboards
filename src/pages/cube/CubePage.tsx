@@ -4,10 +4,15 @@ import DatasourceSelection from "./DatasorceSelection";
 import FactDetail from "./FactDetail";
 import FactTable from "./FactTable";
 import FactMappingDetail from "./FactMappingDetailPage";
+import DimensionPage from "./DimensionPage";
+import { FactMappingData } from "@/shared/constants/models/Cube";
+import MappingTablesPage from "./MappingTablesPage";
 
 const CubePage = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isTabActive, setActiveTab] = useState(false);
+  const [factTableMappingData, setFactTableMappingData] = useState<FactMappingData>(new FactMappingData());
+
   const [completedSteps, setCompletedSteps] = useState(
     new Array(7).fill(false)
   );
@@ -23,31 +28,36 @@ const CubePage = () => {
         />
       ),
     },
-    // {
-    //   label: "Fact Details",
-    //   content: <FactTable
-    //   activeIndex={activeIndex}
-    //   setActiveIndex={setActiveIndex}/>,
-    // },
-    // {
-    //   label: "Fact  Table mapping",
-    //   content: <FactMappingDetail
-    //   activeIndex={activeIndex}
-    //   setActiveIndex={setActiveIndex} />,
-    // },
+
     {
-      label: "Dimension",
-      content: <FactDetail />,
+      label: "Fact Details",
+      content: <FactTable
+      activeIndex={activeIndex}
+      setActiveIndex={setActiveIndex}/>,
+    },
+    
+    {
+      label: "Fact Table Mapping",
+      content: <FactMappingDetail 
+      activeIndex={activeIndex}
+      setActiveIndex={setActiveIndex}
+        factTableMappingData={factTableMappingData} setFactTableMappingData={setFactTableMappingData}
+         />,
     },
     {
+      label: "Dimension",
+      content: <DimensionPage setActiveIndex={setActiveIndex}
+        activeIndex={activeIndex} />,
+    },
+    
+    {
       label: "Fact Dimension Mapping",
-      content: <FactDetail />,
+      content: <MappingTablesPage />,
     },
   ];
 
   return (
     <div className="grid">
-      <div className="col-6"></div>
       <div className="col-12">
         <Steps
           model={tabs}

@@ -11,15 +11,15 @@ import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { InputText } from "primereact/inputtext";
 
-interface FactMappingDetailProps {
-  setActiveIndex: Function,
-  activeIndex: number,
-  factTableMappingData: FactMappingData,
-  setFactTableMappingData: Function;
+interface DimensionPageProps {
+  setActiveIndex: Function;
+  activeIndex: number;
 }
-const FactMappingDetail: React.FC<FactMappingDetailProps> = ({
-  activeIndex, setActiveIndex, factTableMappingData, setFactTableMappingData
+const DimensionPage: React.FC<DimensionPageProps> = ({
+  setActiveIndex,
+  activeIndex,
 }) => {
+  const [factTableMappingData, setFactTableMappingData] = useState<FactMappingData>(new FactMappingData());
   const [factTableMappingArray, setFactTableMappingArray] = useState([]);
   const [isAdded, setIsAdded] = useState(false);
 
@@ -27,7 +27,7 @@ const FactMappingDetail: React.FC<FactMappingDetailProps> = ({
     sourceTable: Yup.object<TableMetaData>().shape({
       tableName: Yup.string().required('Required'),
     }),
-    joinType: Yup.string().required('Required'),
+    relationOption: Yup.string().required('Required'),
     destinationTable: Yup.object<TableMetaData>().shape({
       tableName: Yup.string().required('Required'),
     }),
@@ -38,7 +38,7 @@ const FactMappingDetail: React.FC<FactMappingDetailProps> = ({
       columnName: Yup.string().required('Required'),
     }),
   })
-  const joinTypes = [
+  const relationOptions = [
     "INNER JOIN",
     "LEFT JOIN",
     "RIGHT JOIN",
@@ -56,7 +56,7 @@ const FactMappingDetail: React.FC<FactMappingDetailProps> = ({
   ];
   const gridColumns = [
     { field: "sourceTable.tableName", header: "Source Table" },
-    { field: "joinType", header: "Relation Option" },
+    { field: "relationOption", header: "Relation Option" },
     { field: "destinationTable.tableName", header: "Destination Table" },
     { field: "sourceColumn.columnName", header: "Source Column" },
     { field: "destinationColumn.columnName", header: "Destination Column" },
@@ -65,8 +65,7 @@ const FactMappingDetail: React.FC<FactMappingDetailProps> = ({
   const handleSave = (values, formikHelpers: FormikHelpers<FactMappingData>) => {
     formikHelpers.resetForm();
     setFactTableMappingArray([...factTableMappingArray, values]);
-    setActiveIndex(activeIndex + 1); // Increment activeIndex
-    setIsAdded(true);
+    setIsAdded(true)
   };
 
   return (
@@ -113,19 +112,19 @@ const FactMappingDetail: React.FC<FactMappingDetailProps> = ({
                       Relation
                     </label>
                     <Dropdown
-                      name="joinType"
+                      name="relationOption"
                       className={classNames("w-full", {
                         "p-invalid": isFormFieldInvalid(
-                          errors.joinType,
-                          touched.joinType
+                          errors.relationOption,
+                          touched.relationOption
                         ),
                       })}
                       placeholder="Choose One"
-                      options={joinTypes}
+                      options={relationOptions}
                       onChange={handleChange}
-                      value={values.joinType}
+                      value={values.relationOption}
                     />
-                    {getErrorMessageOnValidation(errors, touched, 'joinType')}
+                    {getErrorMessageOnValidation(errors, touched, 'relationOption')}
                   </div>
                   <div className="col-4 field required">
                     <label htmlFor="name" className="ml-1">
@@ -276,6 +275,9 @@ const FactMappingDetail: React.FC<FactMappingDetailProps> = ({
                 type="submit"
                 className="ml-2"
                 size="small"
+                onClick={() => {
+                  setActiveIndex(activeIndex + 1)
+                }}
               />
             </div>
           </>
@@ -286,4 +288,4 @@ const FactMappingDetail: React.FC<FactMappingDetailProps> = ({
   );
 };
 
-export default FactMappingDetail;
+export default DimensionPage;
