@@ -41,3 +41,16 @@ export const getErrorMessageOnValidation = (errors: any, touched: any, param: an
 export const isFormFieldInvalid = (errors: any, touched: any) => {
     return errors && touched;
 }
+
+export const getErrorMessageForFormik = (error, formikProps) => {
+    try {
+      let errorMsg = eval('formikProps.errors.' + error);
+      if (errorMsg) {
+        return (
+          <small className='ml-1' style={{ color: "red" }}>{errorMsg}</small>
+        )
+      }
+    } catch (err) {
+    }
+    return "";
+  }

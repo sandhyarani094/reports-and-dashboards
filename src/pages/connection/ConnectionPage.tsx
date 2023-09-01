@@ -65,12 +65,9 @@ const ConnectionPage = () => {
   };
 
   const handleEditClick = (rowData: any) => {
-    connectionSerice.getById(rowData.id).then((res) => {
-      console.log(res);
-      router.push({
-        pathname: RouterPath.CREATE_CONNECTION,
-        query: { editData: JSON.stringify(res) },
-      });
+    router.push({
+      pathname: RouterPath.CREATE_CONNECTION,
+      query: { editId: rowData.id },
     });
   };
 
@@ -82,12 +79,15 @@ const ConnectionPage = () => {
       acceptClassName: "p-button-danger",
       rejectClassName: "p-button-secondary",
       accept: () => {
-        showToaster(
-          toastRef,
-          "success",
-          "Successfully",
-          "Connection Deleted Successfully"
-        );
+        connectionSerice.delete(rowData.id).then((res) => {
+          console.log(res);
+          showToaster(
+            toastRef,
+            "success",
+            "Successfully",
+            "Connection Deleted Successfully"
+          );
+        });
       },
       reject: () => {
         showToaster(
