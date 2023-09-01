@@ -29,12 +29,12 @@ export default function MyApp({ Component, pageProps }: Props) {
     const path = usePathname();
     const allPaths = () => {
         let data = getPathNames(path);
-        return data.map((element : any) => {
-          return {
-            template: <Link href={element.pathName} style={{ color: "black" }}>{element.displayName}</Link>
-          }
+        return data.map((element: any) => {
+            return {
+                template: <Link href={element.pathName} style={{ color: "black" }}>{element.displayName}</Link>
+            }
         })
-      }
+    }
     useEffect(() => {
         if (router.pathname == "/") {
             router.push(RouterPath.LOGIN)
@@ -48,7 +48,7 @@ export default function MyApp({ Component, pageProps }: Props) {
             <LayoutProvider>
                 <ToastProvider>
                     <Layout>
-                        <Card>
+                        <Card style={{ height: "calc(100vh - 9rem)", overflowY: "auto" }}>
                             <div className="grid">
                                 <div className="col-12">
                                     <BreadCrumb className='mb-3' model={allPaths()} home={{ template: <Link className='pi pi-home' href={RouterPath.Connection} style={{ color: "black" }}></Link> }} />
