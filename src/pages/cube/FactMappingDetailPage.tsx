@@ -65,7 +65,6 @@ const FactMappingDetail: React.FC<FactMappingDetailProps> = ({
   const handleSave = (values, formikHelpers: FormikHelpers<FactMappingData>) => {
     formikHelpers.resetForm();
     setFactTableMappingArray([...factTableMappingArray, values]);
-    setActiveIndex(activeIndex + 1); // Increment activeIndex
     setIsAdded(true);
   };
 
@@ -276,6 +275,9 @@ const FactMappingDetail: React.FC<FactMappingDetailProps> = ({
                 type="submit"
                 className="ml-2"
                 size="small"
+                onClick={()=>{
+                  setActiveIndex(activeIndex + 1); // Increment activeIndex
+                }}
               />
             </div>
           </>

@@ -1,4 +1,6 @@
-import { Factdetails } from "@/shared/constants/models/Cube";
+import { CubeService } from "@/HttpServices/CubeService";
+import { CubeContext } from "@/common-layouts/context/cubeContext";
+import { CubeDetails, Factdetails } from "@/shared/constants/models/Cube";
 import { ColumnMetaData, TableMetaData } from "@/shared/constants/models/TableMetaData";
 import { getErrorMessageOnValidation, isFormFieldInvalid } from "@/shared/constants/services/utilService";
 import { Formik, Form, FormikHelpers } from "formik";
@@ -8,14 +10,17 @@ import { DataTable } from "primereact/datatable";
 import { Fieldset } from "primereact/fieldset";
 import { MultiSelect } from "primereact/multiselect";
 import { classNames } from "primereact/utils";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import * as Yup from 'yup';
 
 interface FactTableProps {
-  onNext: Function;
+  setActiveIndex: Function,
+  activeIndex: number,
+  tables: TableMetaData[], setTables: Function;
+  dataSourceDetails: CubeDetails;
 }
-const FactTable: React.FC<FactTableProps> = ({ onNext }) => {
-  const tables = [
+const FactTable: React.FC<FactTableProps> = ({ activeIndex, setActiveIndex, tables, setTables, dataSourceDetails }) => {
+  const tablesArray = [
     {
       name: "Account",
       columns: [{ columnName: "Created by" }, { columnName: "Updated by" }],
@@ -37,23 +42,37 @@ const FactTable: React.FC<FactTableProps> = ({ onNext }) => {
       columns: [{ columnName: "Created by" }, { columnName: "Updated by" }],
     },
   ];
+  const cubeService = new CubeService();
 
+  useEffect(() => {
+    findAllTables();
+  }, []);
+
+  const findAllTables = () => {
+    cubeService.getAllTablesByConnection(dataSourceDetails?.connectionId).then((res) => {
+      setTables(res);
+      console.log(res);
+    })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
   const tablesDataGrid = [{ field: "name", header: "Select any Table" }];
   const columnsDataGrid = [{ field: "columnName", header: "Select any Column" }];
 
   const factDetailsValidationSchema = Yup.object().shape({
     factTables: Yup
-    .array()
-    .min(1, 'Select at least one value.'),
+      .array()
+      .min(1, 'Select at least one value.'),
     factColumns: Yup
-    .array()
-    .min(1, 'Select at least one value.') 
-    
+      .array()
+      .min(1, 'Select at least one value.')
+
   })
 
   function handleSave(values: Factdetails, formikHelpers: FormikHelpers<Factdetails>) {
     formikHelpers.resetForm();
-    onNext();
+    setActiveIndex(activeIndex + 1)
   }
 
   return (
