@@ -8,12 +8,11 @@ import { Dropdown } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import {
-  getErrorMessageForFormik,
   getErrorMessageOnValidation,
   isFormFieldInvalid,
 } from "@/shared/constants/services/utilService";
 import { Form, Formik } from "formik";
-import React, { useEffect, useState, useContext, useRef } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { classNames } from "primereact/utils";
 import * as Yup from "yup";
 import { InputNumber } from "primereact/inputnumber";
@@ -30,6 +29,7 @@ const CreateConnectionPage = () => {
   );
   const editId = parseInt(router.query.editId as string);
   const [connectionTest, setConnectionTest] = useState("");
+
   useEffect(() => {
     connectionSerice.getAll().then((res) => {});
   }, []);
@@ -91,15 +91,35 @@ const CreateConnectionPage = () => {
     getAllconnection();
   };
 
-  const handleTest = (values) => {
-      connectionSerice.test(values).then((res) => {
-        setConnectionTest(res);
-        if (connectionTest === "Connection test successful!") {
-          showToaster(toastRef, "success", "Successfull", "Connection !");
+  const handleTest = async (values) => {
+    // Check if the form values are valid based on the Yup schema
+    await connectionValidationSchema.isValid(values).then((valid) => {
+      if (valid) {
+        // Validation succeeded, proceed with the API call
+        if (values) {
+          connectionSerice
+            .test(values)
+            .then((res) => {
+              setConnectionTest(res);
+              showToaster(toastRef, "success", "Successful", "Connection !");
+            })
+            .catch((err) => {
+              console.log(err);
+              showToaster(toastRef, "error", "Failed", "Connection !");
+            });
         } else {
-          showToaster(toastRef, "error", "Failed", "Connection !");
+          showToaster(toastRef, "error", "Error", "Values are missing!");
         }
-      });
+      } else {
+        console.error("Fields can't be empty");
+        showToaster(
+          toastRef,
+          "error",
+          "Fields can't be empty",
+          "Please fill out the fields."
+        );
+      }
+    });
   };
 
   const connectionValidationSchema = Yup.object().shape({
@@ -130,218 +150,200 @@ const CreateConnectionPage = () => {
           touched,
           handleChange,
           handleReset,
-          isValid,
-          validateForm,
-          setErrors,
-        }) => {
-          useEffect(() => {
-            console.log(errors);
-          }, [errors]);
-          return (
-            <Form>
-              <div className="grid">
-                <div className="col-12">
-                  <div className="grid">
-                    <div className="col-6 field required">
-                      <label htmlFor="name" className="ml-1">
-                        Connection Name
-                      </label>
-                      <InputText
-                        name="connectionName"
-                        className={classNames("w-full", {
-                          "p-invalid": isFormFieldInvalid(
-                            errors.connectionName,
-                            touched.connectionName
-                          ),
-                        })}
-                        value={values.connectionName}
-                        placeholder="Connection Name"
-                        onChange={handleChange}
-                      />
-                      {getErrorMessageOnValidation(
-                        errors,
-                        touched,
-                        "connectionName"
-                      )}
-                    </div>
-                    <div className="col-6 field required">
-                      <label htmlFor="name" className="ml-1">
-                        Driver Type
-                      </label>
-                      <Dropdown
-                        name="dbType"
-                        options={[
-                          { label: "MySQL", value: "mysql" },
-                          { label: "MariaDB", value: "mariadb" },
-                          { label: "Oracle", value: "oracle" },
-                          { label: "PostgreSQL", value: "postgresql" },
-                        ]}
-                        value={values.dbType}
-                        optionLabel="label"
-                        optionValue="value"
-                        onChange={handleChange}
-                        placeholder="Driver Type"
-                        className={classNames("w-full", {
-                          "p-invalid": isFormFieldInvalid(
-                            errors.dbType,
-                            touched.dbType
-                          ),
-                        })}
-                        showClear
-                      />
-                      {getErrorMessageOnValidation(
-                        errors,
-                        touched,
-                        "driverType"
-                      )}
-                    </div>
-                    <div className="col-6 field required">
-                      <label htmlFor="name" className="ml-1">
-                        Schema Name
-                      </label>
-                      <InputText
-                        id="schemaName"
-                        name="schemaName"
-                        className={classNames("w-full", {
-                          "p-invalid": isFormFieldInvalid(
-                            errors.schemaName,
-                            touched.schemaName
-                          ),
-                        })}
-                        value={values.schemaName}
-                        placeholder="schemeName"
-                        onChange={handleChange}
-                      />
-                      {getErrorMessageOnValidation(
-                        errors,
-                        touched,
-                        "schemaName"
-                      )}
-                      {/* {getErrorMessageForFormik('schemaName',{errors})} */}
-                    </div>
-                    <div className="col-6 field ">
-                      <label htmlFor="name" className="ml-1">
-                        Host
-                      </label>
-                      <InputText
-                        id="serverAddress"
-                        name="serverAddress"
-                        value={values.serverAddress}
-                        className={classNames("w-full", {
-                          "p-invalid": isFormFieldInvalid(
-                            errors.serverAddress,
-                            touched.serverAddress
-                          ),
-                        })}
-                        placeholder="Server Address"
-                        onChange={handleChange}
-                      />
-                      {getErrorMessageOnValidation(errors, touched, "host")}
-                    </div>
-                    <div className="col-6 field required">
-                      <label htmlFor="name" className="ml-1">
-                        Port
-                      </label>
-                      <InputNumber
-                        name="port"
-                        className={classNames("w-full", {
-                          "p-invalid": isFormFieldInvalid(
-                            errors.port,
-                            touched.port
-                          ),
-                        })}
-                        value={values.port}
-                        placeholder=" Port"
-                        useGrouping={false}
-                        onChange={(e) => {
-                          handleChange({
-                            target: { name: "port", value: e.value },
-                          });
-                        }}
-                      />
-                      {getErrorMessageOnValidation(errors, touched, "port")}
-                    </div>
-                    <div className="col-6 field required">
-                      <label htmlFor="name" className="ml-1">
-                        User name
-                      </label>
-                      <InputText
-                        id="userId"
-                        name="userId"
-                        value={values.userId}
-                        className={classNames("w-full", {
-                          "p-invalid": isFormFieldInvalid(
-                            errors.userId,
-                            touched.userId
-                          ),
-                        })}
-                        placeholder=" User Name"
-                        onChange={handleChange}
-                      />
-                      {getErrorMessageOnValidation(errors, touched, "username")}
-                    </div>
-                    <div className="col-6 field required">
-                      <label htmlFor="name" className="ml-1">
-                        Password
-                      </label>
-                      <InputText
-                        id="password"
-                        name="password"
-                        className={classNames("w-full", {
-                          "p-invalid": isFormFieldInvalid(
-                            errors.password,
-                            touched.password
-                          ),
-                        })}
-                        value={values.password}
-                        placeholder="password"
-                        onChange={handleChange}
-                      />
-                      {getErrorMessageOnValidation(errors, touched, "password")}
-                    </div>
-                    <div className="col-6 field required">
-                      <label htmlFor="name" className="ml-1">
-                        Service Id
-                      </label>
-                      <InputText
-                        id="serviceId"
-                        name="serviceId"
-                        className={"w-full"}
-                        value={values.serviceId}
-                        placeholder="serviceId"
-                        onChange={handleChange}
-                      />
-                    </div>
+          setFieldValue
+        }) => (
+          <Form>
+            <div className="grid">
+              <div className="col-12">
+                <div className="grid">
+                  <div className="col-6 field required">
+                    <label htmlFor="name" className="ml-1">
+                      Connection Name
+                    </label>
+                    <InputText
+                      name="connectionName"
+                      className={classNames("w-full", {
+                        "p-invalid": isFormFieldInvalid(
+                          errors.connectionName,
+                          touched.connectionName
+                        ),
+                      })}
+                      value={values.connectionName}
+                      placeholder="Connection Name"
+                      onChange={handleChange}
+                    />
+                    {getErrorMessageOnValidation(
+                      errors,
+                      touched,
+                      "connectionName"
+                    )}
+                  </div>
+                  <div className="col-6 field required">
+                    <label htmlFor="name" className="ml-1">
+                      Driver Type
+                    </label>
+                    <Dropdown
+                      name="dbType"
+                      options={[
+                        { label: "MySQL", value: "mysql" },
+                        { label: "MariaDB", value: "mariadb" },
+                        { label: "Oracle", value: "oracle" },
+                        { label: "PostgreSQL", value: "postgresql" },
+                      ]}
+                      value={values.dbType}
+                      optionLabel="label"
+                      optionValue="value"
+                      onChange={handleChange}
+                      placeholder="Driver Type"
+                      className={classNames("w-full", {
+                        "p-invalid": isFormFieldInvalid(
+                          errors.dbType,
+                          touched.dbType
+                        ),
+                      })}
+                      showClear
+                    />
+                    {getErrorMessageOnValidation(errors, touched, "dbType")}
+                  </div>
+                  <div className="col-6 field required">
+                    <label htmlFor="name" className="ml-1">
+                      Schema Name
+                    </label>
+                    <InputText
+                      id="schemaName"
+                      name="schemaName"
+                      className={classNames("w-full", {
+                        "p-invalid": isFormFieldInvalid(
+                          errors.schemaName,
+                          touched.schemaName
+                        ),
+                      })}
+                      value={values.schemaName}
+                      placeholder="schemeName"
+                      onChange={handleChange}
+                    />
+                    {getErrorMessageOnValidation(errors, touched, "schemaName")}
+                  </div>
+                  <div className="col-6 field ">
+                    <label htmlFor="name" className="ml-1">
+                      Host
+                    </label>
+                    <InputText
+                      id="serverAddress"
+                      name="serverAddress"
+                      value={values.serverAddress}
+                      className={classNames("w-full", {
+                        "p-invalid": isFormFieldInvalid(
+                          errors.serverAddress,
+                          touched.serverAddress
+                        ),
+                      })}
+                      placeholder="Server Address"
+                      onChange={handleChange}
+                    />
+                    {getErrorMessageOnValidation(
+                      errors,
+                      touched,
+                      "serverAddress"
+                    )}
+                  </div>
+                  <div className="col-6 field required">
+                    <label htmlFor="name" className="ml-1">
+                      Port
+                    </label>
+                    <InputNumber
+                      name="port"
+                      className={classNames("w-full", {
+                        "p-invalid": isFormFieldInvalid(errors.port, touched.port),
+                      })}
+                      value={values.port}
+                      placeholder=" Port"
+                      useGrouping={false}
+                      onChange={(e) => {
+                        setFieldValue("port",e.value);
+                      }}
+                    />
+                    {getErrorMessageOnValidation(errors, touched, "port")}
+                  </div>
+                  <div className="col-6 field required">
+                    <label htmlFor="name" className="ml-1">
+                      User name
+                    </label>
+                    <InputText
+                      id="userId"
+                      name="userId"
+                      value={values.userId}
+                      className={classNames("w-full", {
+                        "p-invalid": isFormFieldInvalid(
+                          errors.userId,
+                          touched.userId
+                        ),
+                      })}
+                      placeholder=" User Name"
+                      onChange={handleChange}
+                    />
+                    {getErrorMessageOnValidation(errors, touched, "userId")}
+                  </div>
+                  <div className="col-6 field required">
+                    <label htmlFor="name" className="ml-1">
+                      Password
+                    </label>
+                    <InputText
+                      id="password"
+                      name="password"
+                      className={classNames("w-full", {
+                        "p-invalid": isFormFieldInvalid(
+                          errors.password,
+                          touched.password
+                        ),
+                      })}
+                      value={values.password}
+                      placeholder="password"
+                      onChange={handleChange}
+                    />
+                    {getErrorMessageOnValidation(errors, touched, "password")}
+                  </div>
+                  <div className="col-6 field required">
+                    <label htmlFor="name" className="ml-1">
+                      Service Id
+                    </label>
+                    <InputText
+                      id="serviceId"
+                      name="serviceId"
+                      className={"w-full"}
+                      value={values.serviceId}
+                      placeholder="serviceId"
+                      onChange={handleChange}
+                    />
                   </div>
                 </div>
               </div>
-              <div className="col-12 text-right">
-                <Button
-                  label="Test"
-                  type="button"
-                  size="small"
-                  onClick={(values) => {
-                    handleTest(values);
-                  }}
-                />
-                <Button
-                  label={editId ? "Update" : "Save"}
-                  type="submit"
-                  className="ml-2"
-                  size="small"
-                />
-                <Button
-                  label="Cancel "
-                  type="button"
-                  className="ml-2"
-                  size="small"
-                  outlined
-                  onClick={() => router.back()}
-                />
-              </div>
-            </Form>
-          );
-        }}
+            </div>
+            <div className="col-12 text-right">
+              <Button
+                label="Test"
+                type="button"
+                size="small"
+                onClick={() => handleTest(values)}
+              />
+              <Button
+                label={editId ? "Update" : "Save"}
+                type="submit"
+                className="ml-2"
+                size="small"
+                // onClick={() => handleSave(values)}
+              />
+              <Button
+                label="Cancel "
+                type="button"
+                className="ml-2"
+                size="small"
+                outlined
+                onClick={() => router.back()}
+              />
+            </div>
+          </Form>
+        )}
       </Formik>
     </>
   );

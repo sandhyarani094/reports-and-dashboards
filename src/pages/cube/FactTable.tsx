@@ -12,9 +12,10 @@ import { useState } from "react";
 import * as Yup from 'yup';
 
 interface FactTableProps {
-  onNext: Function;
+  setActiveIndex: Function;
+  activeIndex: number;
 }
-const FactTable: React.FC<FactTableProps> = ({ onNext }) => {
+const FactTable: React.FC<FactTableProps> = ({ setActiveIndex,activeIndex }) => {
   const tables = [
     {
       name: "Account",
@@ -53,7 +54,7 @@ const FactTable: React.FC<FactTableProps> = ({ onNext }) => {
 
   function handleSave(values: Factdetails, formikHelpers: FormikHelpers<Factdetails>) {
     formikHelpers.resetForm();
-    onNext();
+    setActiveIndex(activeIndex + 1); // Increment activeIndex
   }
 
   return (

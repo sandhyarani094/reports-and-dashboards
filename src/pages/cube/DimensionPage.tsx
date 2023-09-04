@@ -64,7 +64,7 @@ const DimensionPage: React.FC<DimensionPageProps> = ({
 
   const handleSave = (values, formikHelpers: FormikHelpers<FactMappingData>) => {
     formikHelpers.resetForm();
-    setFactTableMappingArray([...factTableMappingArray, values]);
+    setFactTableMappingArray([...factTableMappingArray]);
     setIsAdded(true)
   };
 
@@ -115,14 +115,14 @@ const DimensionPage: React.FC<DimensionPageProps> = ({
                       name="relationOption"
                       className={classNames("w-full", {
                         "p-invalid": isFormFieldInvalid(
-                          errors.relationOption,
-                          touched.relationOption
+                          errors.joinType,
+                          touched.joinType
                         ),
                       })}
                       placeholder="Choose One"
                       options={relationOptions}
                       onChange={handleChange}
-                      value={values.relationOption}
+                      value={values.joinType}
                     />
                     {getErrorMessageOnValidation(errors, touched, 'relationOption')}
                   </div>
