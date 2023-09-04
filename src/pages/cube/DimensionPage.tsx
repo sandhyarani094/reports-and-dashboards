@@ -27,7 +27,7 @@ const DimensionPage: React.FC<DimensionPageProps> = ({
     sourceTable: Yup.object<TableMetaData>().shape({
       tableName: Yup.string().required('Required'),
     }),
-    relationOption: Yup.string().required('Required'),
+    joinType: Yup.string().required('Required'),
     destinationTable: Yup.object<TableMetaData>().shape({
       tableName: Yup.string().required('Required'),
     }),
@@ -56,7 +56,7 @@ const DimensionPage: React.FC<DimensionPageProps> = ({
   ];
   const gridColumns = [
     { field: "sourceTable.tableName", header: "Source Table" },
-    { field: "relationOption", header: "Relation Option" },
+    { field: "joinType", header: "Relation Option" },
     { field: "destinationTable.tableName", header: "Destination Table" },
     { field: "sourceColumn.columnName", header: "Source Column" },
     { field: "destinationColumn.columnName", header: "Destination Column" },
@@ -112,19 +112,19 @@ const DimensionPage: React.FC<DimensionPageProps> = ({
                       Relation
                     </label>
                     <Dropdown
-                      name="relationOption"
+                      name="joinType"
                       className={classNames("w-full", {
                         "p-invalid": isFormFieldInvalid(
-                          errors.relationOption,
-                          touched.relationOption
+                          errors.joinType,
+                          touched.joinType
                         ),
                       })}
                       placeholder="Choose One"
                       options={relationOptions}
                       onChange={handleChange}
-                      value={values.relationOption}
+                      value={values.joinType}
                     />
-                    {getErrorMessageOnValidation(errors, touched, 'relationOption')}
+                    {getErrorMessageOnValidation(errors, touched, 'joinType')}
                   </div>
                   <div className="col-4 field required">
                     <label htmlFor="name" className="ml-1">

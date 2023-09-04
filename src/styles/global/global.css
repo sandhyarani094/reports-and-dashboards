@@ -2,3 +2,14 @@
     content: " *";
     color: red;
 }
+
+.layout-static.layout-static-inactive .layout-sidebar {
+    left: 0 !important;
+}
+
+.layout-wrapper.layout-static .layout-main-container {
+    margin-left: 260px !important;
+}
+.layout-wrapper.layout-static.layout-static-inactive .layout-main-container {
+    margin-left: 0px !important;
+}

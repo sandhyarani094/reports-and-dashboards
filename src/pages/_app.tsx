@@ -47,10 +47,10 @@ export default function MyApp({ Component, pageProps }: Props) {
             <LayoutProvider>
                 <ToastProvider>
                     <Layout>
-                        <Card style={{ height: "calc(100vh - 9rem)", overflowY: "auto" }}>
+                        <Card >
                             <div className="grid">
                                 <div className="col-12">
-                                    <BreadCrumb className='mb-3' model={allPaths()} home={{ template: <Link className='pi pi-home' href={RouterPath.Connection} style={{ color: "black" }}></Link> }} />
+                                    <BreadCrumb className='mb-3 p-2' model={allPaths()} home={{ template: <Link className='pi pi-home' href={RouterPath.Connection} style={{ color: "black" }}></Link> }} />
                                 </div>
                             </div>
                             <Component {...pageProps} />
