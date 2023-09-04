@@ -1,4 +1,3 @@
-import { Card } from 'primereact/card';
 import React from 'react';
 import { useDrag } from 'react-dnd';
 
@@ -9,6 +8,7 @@ interface DraggableMeasureProps {
 }
 
 const DraggableMeasurePage: React.FC<DraggableMeasureProps> = ({ measure, measureIndex, onMeasureDrop }) => {
+ 
   const [, drag] = useDrag({
     type: 'DRAGGABLE_MEASURE',
     item: { measure, measureIndex },
@@ -22,16 +22,16 @@ const DraggableMeasurePage: React.FC<DraggableMeasureProps> = ({ measure, measur
 
   return (
     <div ref={drag}>
-      <Card
+      <div
         style={{
           height: 'fit-content',
-          padding: '2px',
-          border: '1px dashed',
+          padding: '1px',
+          border: '1px solid',
           marginBottom: '8px',
         }}
       >
         {measure}
-      </Card>
+      </div>
     </div>
   );
 };

@@ -1,8 +1,9 @@
 import { Dropdown } from 'primereact/dropdown'
 import React, { useState, useRef } from 'react'
-import DraggableMeasurePage from '../DraggableMeasures/DraggableMeasurePage';
-import { DndProvider } from 'react-dnd';
+import DraggableMeasurePage from './_DraggableMeasures/DraggableMeasurePage';
+import { DndProvider, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import DroppableMeasuresPage from './_DraggableMeasures/DroppableMeasurePage';
 
 interface Measure {
   id: number;
@@ -34,6 +35,7 @@ const ComponentsPage = () => {
   };
 
   return (
+    
     <div className='grid'>
       <div className="col-12">
         <center><h5>Component</h5></center>
@@ -70,7 +72,7 @@ const ComponentsPage = () => {
                     ))}
                   </div>
                 </div>
-              </DndProvider>
+                </DndProvider>
               <div className="col-12" style={{ background: '#0abaf2' }}>
                 <h6 style={{ color: 'white' }}>Dimension</h6>
               </div>
@@ -88,11 +90,10 @@ const ComponentsPage = () => {
           </div>
           <div className="col-1"></div>
           <div className="col-3">
-            <div className="grid">
-              <div className="col-12" style={{ background: '#0abaf2' }}>
-                <h6 style={{ color: 'white' }}>Measures</h6>
-              </div>
-            </div>
+          <div ref={measurePageRef} className="grid">
+            <h6 style={{ color: 'white' }}>Measures</h6>
+            <DroppableMeasuresPage onMeasureDrop={handleMeasureDrop} />
+          </div>
           </div>
           <div className="col-1"></div>
           <div className="col-4">
@@ -105,6 +106,7 @@ const ComponentsPage = () => {
         </div>
       </div>
     </div>
+   
   )
 }
 
