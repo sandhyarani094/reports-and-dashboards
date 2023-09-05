@@ -13,3 +13,20 @@
 .layout-wrapper.layout-static.layout-static-inactive .layout-main-container {
     margin-left: 0px !important;
 }
+
+/* Customize the scrollbar track */
+::-webkit-scrollbar {
+    width: 8px; /* Adjust the width as needed */
+  }
+  
+  /* Customize the scrollbar thumb */
+  ::-webkit-scrollbar-thumb {
+    background: #D0E1FD; /* Change the background color */
+    border-radius: 5px; /* Adjust the border radius as needed */
+  }
+  
+  /* Customize the scrollbar track on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #6366F1; /* Change the hover background color */
+  }
+  

@@ -84,17 +84,17 @@ const ConnectionPage = () => {
           showToaster(
             toastRef,
             "success",
-            "Successfully",
-            "Connection Deleted Successfully"
+            "Success",
+            "Connection Created Successfully"
           );
         });
       },
       reject: () => {
         showToaster(
           toastRef,
-          "success",
-          "Successfully",
-          "Connection could not Deleted Successfully"
+          "error",
+          "Error",
+          "An error occurred while deleting the connection."
         );
       },
     });
