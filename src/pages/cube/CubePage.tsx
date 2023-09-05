@@ -1,22 +1,26 @@
 import { Steps } from "primereact/steps";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import DatasourceSelection from "./DatasorceSelection";
-import FactDetail from "./FactDetail";
 import FactTable from "./FactTable";
 import FactMappingDetail from "./FactMappingDetailPage";
 import DimensionPage from "./DimensionPage";
-import { FactMappingData } from "@/shared/constants/models/Cube";
+import { CubeDetails, FactMappingData } from "@/shared/constants/models/Cube";
 import MappingTablesPage from "./MappingTablesPage";
+import { TableMetaData } from "@/shared/constants/models/TableMetaData";
+import { CubeContextProvider } from "@/common-layouts/context/cubeContext";
 
 const CubePage = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isTabActive, setActiveTab] = useState(false);
+  const [dataSourceDetails,setDataSourceDetails ] = useState<CubeDetails>(new CubeDetails());
+  const [tables, setTables] = useState<TableMetaData[]> ([]);
   const [factTableMappingData, setFactTableMappingData] = useState<FactMappingData>(new FactMappingData());
 
   const [completedSteps, setCompletedSteps] = useState(
     new Array(7).fill(false)
   );
 
+  
   const tabs = [
     {
       label: "Datasource Selection",
@@ -25,6 +29,8 @@ const CubePage = () => {
           setActiveTab={setActiveTab}
           activeIndex={activeIndex}
           setActiveIndex={setActiveIndex}
+          dataSourceDetails = {dataSourceDetails}
+          setDataSourceDetails = {setDataSourceDetails}
         />
       ),
     },
@@ -33,7 +39,11 @@ const CubePage = () => {
       label: "Fact Details",
       content: <FactTable
       activeIndex={activeIndex}
-      setActiveIndex={setActiveIndex}/>,
+      setActiveIndex={setActiveIndex}
+      dataSourceDetails = {dataSourceDetails}
+      tables={tables}
+      setTables={setTables}
+      />,
     },
     
     {
@@ -57,6 +67,7 @@ const CubePage = () => {
   ];
 
   return (
+    <CubeContextProvider>
     <div className="grid">
       <div className="col-12">
         <Steps
@@ -68,6 +79,8 @@ const CubePage = () => {
         <div className="col-12 p-5">{tabs[activeIndex].content}</div>
       </div>
     </div>
+    </CubeContextProvider>
+
   );
 };
 
