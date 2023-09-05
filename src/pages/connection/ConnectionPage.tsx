@@ -72,32 +72,36 @@ const ConnectionPage = () => {
   };
 
   const handleDelete = (rowData: any) => {
-    confirmDialog({
-      message: `Do you want to delete this Matching Rule ?`,
-      header: "Delete Confirmation",
-      icon: "pi pi-info-circle",
-      acceptClassName: "p-button-danger",
-      rejectClassName: "p-button-secondary",
-      accept: () => {
-        connectionSerice.delete(rowData.id).then((res) => {
-          console.log(res);
-          showToaster(
-            toastRef,
-            "success",
-            "Success",
-            "Connection Created Successfully"
-          );
-        });
-      },
-      reject: () => {
+    showToaster(
+      toastRef,
+      "warn",
+      "Warning!",
+      (
+        <div className="flex flex-column align-items-center" style={{ flex: '1' }}>
+          <div className="text-center">
+            <i className="pi pi-exclamation-triangle" style={{ fontSize: '2rem' }}></i>
+            <div className="font-bold text-xl my-3">Are you sure to remove <b>{rowData.connectionName}</b>?</div>
+          </div>
+          <div className="flex gap-2">
+            <Button onClick={(e) => deleteEvent(rowData.id)} type="button" label="Confirm" className="p-button-success w-7rem" />
+            <Button onClick={(e) => toastRef.current.clear()} type="button" label="Cancel" className="p-button-warning w-5rem" />
+          </div>
+        </div>
+      )
+    );
+
+    const deleteEvent = (rowDataId) =>{
+      connectionSerice.delete(rowDataId).then((res) => {
+        console.log(res);
         showToaster(
           toastRef,
-          "error",
-          "Error",
-          "An error occurred while deleting the connection."
+          "success",
+          "Success",
+          "Connection Removed"
         );
-      },
-    });
+      });
+    }
+
   };
 
   return (
