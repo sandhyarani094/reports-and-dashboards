@@ -8,7 +8,7 @@ export class CubeService {
     public getAllTablesByConnection = async (connectionId) => {
       try {
         const res: AxiosResponse = await this.httpService.getRequest(
-          `${this.BASE_URL}/${connectionId}`
+          `${this.BASE_URL}/tables?connectionId=${connectionId}`
         );
         return res.data;
       } catch (error) {
