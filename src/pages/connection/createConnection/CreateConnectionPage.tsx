@@ -48,7 +48,7 @@ const CreateConnectionPage = () => {
     });
   };
 
-  const handleSave = (values) => {
+  const handleSave = (values: Connection) => {
     if (editId) {
       connectionSerice
         .update(editId, values)
@@ -91,7 +91,7 @@ const CreateConnectionPage = () => {
     getAllconnection();
   };
 
-  const handleTest = async (values) => {
+  const handleTest = async (values: Connection) => {
     // Check if the form values are valid based on the Yup schema
     await connectionValidationSchema.isValid(values).then((valid) => {
       if (valid) {

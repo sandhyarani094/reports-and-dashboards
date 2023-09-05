@@ -3,7 +3,7 @@ export class Connection {
     connectionName: string = ""
     dbType: string = ""
     serverAddress: string = ""
-    port: number;
+    port!: number;
     userId: string = ""
     password: string = ""
     schemaName: string = ""
