@@ -30,7 +30,7 @@
     background: #6366F1; /* Change the hover background color */
   }
 
-  .measure-list .p-listbox-list-wrapper .p-listbox-list {
+  .measure-list .p-listbox-list {
     overflow: auto;
     max-height: 28vh;
 }
@@ -51,3 +51,4 @@
   border: 1px solid #ced4da;
   border-radius: 6px
 }
+

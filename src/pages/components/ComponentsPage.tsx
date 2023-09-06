@@ -1,14 +1,18 @@
 
 import { ComponentService } from '@/HttpServices/ComponentService';
+import { Button } from 'primereact/button';
+import { Column } from 'primereact/column';
 import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown'
 import { ListBox } from 'primereact/listbox';
 import React, { useEffect, useState } from 'react'
-import { useDrag } from 'react-dnd';
+import { useDrag, useDrop } from 'react-dnd';
 
-interface ControlItemProp {
+interface MeasureItemProp {
   index: number;
-  controlItem: { label: string; value: number };
+  measureItem: { label: string; value: number };
 }
+
+const items = Array.from({ length: 50 }).map((_, i) => ({ label: `Measure Value ${i}`, value: i }));
 
 const ComponentsPage = () => {
   const componentService = new ComponentService();
@@ -16,7 +20,8 @@ const ComponentsPage = () => {
   let [cubeId, setCubeId] = useState(null);
   const [dimesionData, setDimensionData] = useState([]);
   const [dimesionId, setDimensionId] = useState(null);
-
+  const [measureList, setMeasureList] = useState(items);
+  const [droppedItems, setDroppedItems] = useState([]);
 
   const [selectedCity, setSelectedCity] = useState(null);
 
@@ -52,31 +57,47 @@ const ComponentsPage = () => {
     findAllDimension();
   }
 
-  const ControlItem = ({ index, controlItem }: ControlItemProp) => {
+  const handleDropMeasure = (index: number, measureItem: any) => {
+    const updatedDraggableItems = [...measureList];
+    updatedDraggableItems.splice(index, 1);
+    setMeasureList(updatedDraggableItems);
+    setDroppedItems([...droppedItems, measureItem]);
+  };
+
+  const MeasureItem = ({ index, measureItem }: MeasureItemProp) => {
     const [{ isDragging }, drag] = useDrag(() => ({
       type: "measures",
-      item: { index, controlItem, type: "measures" },
+      item: { index, measureItem, type: "measures" },
       end: (item, monitor) => {
         const dropResult = monitor.getDropResult();
       },
+
       collect: (monitor) => ({
         isDragging: monitor.isDragging(),
         handlerId: monitor.getHandlerId(),
       }),
     }));
 
-    [index,controlItem]
-    
+    [index, measureItem]
+
     return (
       <li ref={drag} className="p-listbox-item draggable no-select">
-        {controlItem.label}
+        {measureItem.label}
       </li>
     );
   };
-  const items = Array.from({ length: 100 }).map((_, i) => ({ label: `Measure Value ${i}`, value: i }));
+
+  const [, drop] = useDrop({
+    accept: "measures",
+    drop: (item: any) => {
+      const index = item.index; 
+      const measureItem = item.measureItem; 
+      handleDropMeasure(index, measureItem);
+    },
+  });
 
   return (
-    
+
     <div className='grid'>
       <div className="col-12">
         <div className="grid">
@@ -105,23 +126,20 @@ const ComponentsPage = () => {
             }}>
               <h6 className='m-0' style={{ color: 'black' }}>All Measures</h6>
             </div>
-          
             <div className="col-12 px-0 pt-0">
-            <div className="measure-list">
-              <div className="p-listbox-list-wrapper">
+              <div className="measure-list">
                 <ul className="p-listbox-list">
-                  {items.map((controlItem, index) => {
+                  {measureList.map((measureItem, index) => {
                     return (
-                      <ControlItem
+                      <MeasureItem
                         key={index}
                         index={index}
-                        controlItem={controlItem}
+                        measureItem={measureItem}
                       />
                     );
                   })}
                 </ul>
               </div>
-             </div>
             </div>
             <div className="col-12 text-center bg-blue-100" style={{
               backgroundColor: 'var(--highlight-bg)',
@@ -147,14 +165,21 @@ const ComponentsPage = () => {
               <h6 className='m-0' style={{ color: 'black' }}>All Dimension</h6>
             </div>
             <div className="col-12 px-0 pt-0">
-              <ListBox
-                style={{ borderTopLeftRadius: "0" }}
-                value={selectedCity}
-                onChange={(e) => setSelectedCity(e.value)}
-                options={items}
-                className="w-full"
-                listStyle={{ height: '170px' }}
-              />
+              <div className="measure-list">
+                <div className="p-listbox-list-wrapper">
+                  <ul className="p-listbox-list">
+                    {measureList.map((measureItem, index) => {
+                      return (
+                        <MeasureItem
+                          key={index}
+                          index={index}
+                          measureItem={measureItem}
+                        />
+                      );
+                    })}
+                  </ul>
+                </div>
+              </div>
             </div>
           </div>
           <div className="col-3 ">
@@ -164,8 +189,26 @@ const ComponentsPage = () => {
             }}>
               <h6 className='m-0' style={{ color: 'black' }}>Measures</h6>
             </div>
-            <div className="col-12 px-0 pt-0">
-              <div style={{width: '38vh', height:'15vh', border:'1px solid #ced4da'}}></div>
+            <div
+              className='col-3 mb-3'
+              ref={drop}
+              style={{ width: '38vh', height: '25vh', border: '1px solid #ced4da', overflow: "auto", borderRadius:"4%" }}
+            >
+              {droppedItems.map((item, index) => (
+                <div key={index} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{padding:"0.5rem"}}>{item.label}</div>
+                  <i
+                    className='pi pi-cog ml-5' 
+                    style={{ cursor: 'pointer'}} 
+                    onClick={() => console.log('handleDeleteItem(index)')} 
+                  />
+                  <i
+                    className='pi pi-trash mr-2' 
+                    style={{ cursor: 'pointer' }} 
+                    onClick={() => console.log('handleDeleteItem(index)')} 
+                  />
+                </div>
+              ))}
             </div>
             <div className="col-12  text-center bg-blue-100" style={{
               backgroundColor: 'var(--highlight-bg)',
@@ -178,7 +221,6 @@ const ComponentsPage = () => {
                 style={{ borderTopLeftRadius: "0" }}
                 value={selectedCity}
                 onChange={(e) => setSelectedCity(e.value)}
-                options={items}
                 className="w-full"
                 listStyle={{ height: '153px' }}
               />
@@ -211,7 +253,7 @@ const ComponentsPage = () => {
         </div>
       </div>
     </div>
-   
+
   )
 }
 
