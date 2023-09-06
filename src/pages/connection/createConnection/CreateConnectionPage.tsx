@@ -1,23 +1,20 @@
 "use client";
 import { RouterPath } from "@/shared/constants/router";
 import { useRouter } from "next/router";
-import { ToastContext } from "@/common-layouts/context/toasterContext";
-import { Connection } from "@/shared/constants/models/Connection";
-import { showToaster } from "@/shared/constants/services/ToastService";
 import { Dropdown } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
-import {
-  getErrorMessageOnValidation,
-  isFormFieldInvalid,
-} from "@/shared/constants/services/utilService";
-import { Form, Formik } from "formik";
 import React, { useEffect, useState, useContext } from "react";
 import { classNames } from "primereact/utils";
 import * as Yup from "yup";
 import { InputNumber } from "primereact/inputnumber";
 import { error } from "console";
-import { ConnectionService } from "@/httpServices/ConnectionService";
+import { showToaster } from "@/shared/constants/services/ToastService";
+import { Connection } from "@/shared/constants/models/Connection";
+import { ToastContext } from "@/common-layouts/context/toasterContext";
+import { Form, Formik } from "formik";
+import { getErrorMessageOnValidation, isFormFieldInvalid } from "@/shared/constants/services/utilService";
+import { ConnectionService } from "@/HttpServices/ConnectionService";
 
 const CreateConnectionPage = () => {
   const router = useRouter();
@@ -91,7 +88,7 @@ const CreateConnectionPage = () => {
     getAllconnection();
   };
 
-  const handleTest = async (values: Connection) => {
+  const handleTest = async (values) => {
     // Check if the form values are valid based on the Yup schema
     await connectionValidationSchema.isValid(values).then((valid) => {
       if (valid) {

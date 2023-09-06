@@ -29,4 +29,26 @@
   ::-webkit-scrollbar-thumb:hover {
     background: #6366F1; /* Change the hover background color */
   }
+
+  .measure-list .p-listbox-list {
+    overflow: auto;
+    max-height: 28vh;
+}
+
+.p-listbox-item.draggable {
+  cursor: grab;
+  margin: 0;
+  padding: 0.75rem 1.25rem;
+  border: 0 none;
+  color: #495057;
+  transition: box-shadow 0.2s;
+  border-radius: 0;
+}
   
+.measure-list{
+  background: #ffffff;
+  color: #495057;
+  border: 1px solid #ced4da;
+  border-radius: 6px
+}
+
