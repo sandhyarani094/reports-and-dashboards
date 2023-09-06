@@ -137,10 +137,10 @@ const Layout = ({ children }: ChildContainerProps) => {
 
             <div className={containerClass}>
                 <AppTopbar ref={topbarRef} />
-                <div ref={sidebarRef} className="layout-sidebar">
+                <div ref={sidebarRef} className="layout-sidebar" style={{ top: '6rem', left: '1rem', width: '245px', height: "calc(100vh - 7rem)" }}>
                     <AppSidebar />
                 </div>
-                <div className="layout-main-container">
+                <div className="layout-main-container" style={{ padding: "6rem 1rem 2rem 1rem"}}>
                     <div className="layout-main">{children}</div>
                     <AppFooter />
                 </div>

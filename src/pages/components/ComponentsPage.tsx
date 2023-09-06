@@ -1,19 +1,24 @@
-import { Dropdown } from 'primereact/dropdown'
-import React, { useState, useRef } from 'react'
-import DraggableMeasurePage from './_DraggableMeasures/DraggableMeasurePage';
-import { DndProvider, useDrop } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
-import DroppableMeasuresPage from './_DraggableMeasures/DroppableMeasurePage';
 
-interface Measure {
-  id: number;
-  value: string;
+import { ComponentService } from '@/HttpServices/ComponentService';
+import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown'
+import { ListBox } from 'primereact/listbox';
+import React, { useEffect, useState } from 'react'
+import { useDrag } from 'react-dnd';
+
+interface ControlItemProp {
+  index: number;
+  controlItem: { label: string; value: number };
 }
 
 const ComponentsPage = () => {
+  const componentService = new ComponentService();
+  const [CubesData, setCubesData] = useState([]);
+  let [cubeId, setCubeId] = useState(null);
+  const [dimesionData, setDimensionData] = useState([]);
+  const [dimesionId, setDimensionId] = useState(null);
 
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [droppedMeasures, setDroppedMeasures] = useState<string[]>([]);
+
+  const [selectedCity, setSelectedCity] = useState(null);
 
   const dropdownOptions = [
     { label: 'Option 1', value: 'option1' },
@@ -21,86 +26,186 @@ const ComponentsPage = () => {
     { label: 'Option 3', value: 'option3' }
   ];
 
-  const allMeasuresValues: Measure[] = [
-    { id: 1, value: 'Measure Value 1' },
-    { id: 2, value: 'Measure Value 2' },
-    { id: 3, value: 'Measure Value 3' },
-    { id: 4, value: 'Measure Value 4' },
-  ];
+  useEffect(() => {
+    findAllCubes();
+  }, [])
 
-  const measurePageRef = useRef(null);
-  
-  const handleMeasureDrop = (droppedMeasure: string) => {
-    setDroppedMeasures([...droppedMeasures, droppedMeasure]);
+  const findAllCubes = () => {
+    componentService.getAllCubes().then((res) => {
+      setCubesData(res);
+    }).catch((err) => {
+      console.log(err);
+    })
+  }
+  const findAllDimension = () => {
+    componentService.getAllDimensions(cubeId).then((res) => {
+      console.log(res);
+      setDimensionData(res);
+    }).catch((err) => {
+      console.log(err);
+    })
+  }
+
+  const handleChangeCube = (e: DropdownChangeEvent) => {
+    cubeId = e.value;
+    setCubeId(e.value);
+    findAllDimension();
+  }
+
+  const ControlItem = ({ index, controlItem }: ControlItemProp) => {
+    const [{ isDragging }, drag] = useDrag(() => ({
+      type: "measures",
+      item: { index, controlItem, type: "measures" },
+      end: (item, monitor) => {
+        const dropResult = monitor.getDropResult();
+      },
+      collect: (monitor) => ({
+        isDragging: monitor.isDragging(),
+        handlerId: monitor.getHandlerId(),
+      }),
+    }));
+
+    [index,controlItem]
+    
+    return (
+      <li ref={drag} className="p-listbox-item draggable no-select">
+        {controlItem.label}
+      </li>
+    );
   };
+  const items = Array.from({ length: 100 }).map((_, i) => ({ label: `Measure Value ${i}`, value: i }));
 
   return (
     
     <div className='grid'>
       <div className="col-12">
-        <center><h5>Component</h5></center>
-      </div>
-      <div className="col-12">
         <div className="grid">
-          <div className="col-3">
-            <div className="grid">
-              <div className="col-12" style={{ background: '#0abaf2' }}>
-                <h6 style={{ color: 'white' }}>CUBE</h6>
-              </div>
-              <div className="col-12">
-                <Dropdown
-                  className='w-full'
-                  placeholder='Select One'
-                  options={dropdownOptions}
-                  onChange={(e) => setSelectedOption(e.value)}
-                  value={selectedOption}
-                />
-              </div>
-              <div className="col-12" style={{ background: '#0abaf2' }}>
-                <h6 style={{ color: 'white' }}>All Measures</h6>
-              </div>
-              <DndProvider backend={HTML5Backend}>
-                <div ref={measurePageRef} className="grid">
-                  <div className="col-12">
-                    {allMeasuresValues.map((measure, index) => (
-                      <DraggableMeasurePage
+          <div className="col-3 ">
+            <div className="col-12 text-center bg-blue-100" style={{
+              backgroundColor: 'var(--highlight-bg)',
+              borderRadius: 'var(--border-radius)', borderBottomLeftRadius: "0", borderBottomRightRadius: "0"
+            }}>
+              <h6 className='m-0' style={{ color: 'black' }}>Cube</h6>
+            </div>
+            <div className="col-12 px-0 pt-0">
+              <Dropdown
+                style={{ borderTopLeftRadius: '0', borderTopRightRadius: '0' }}
+                className='w-full'
+                placeholder='Select One'
+                options={CubesData}
+                onChange={(e) => handleChangeCube(e)}
+                value={cubeId}
+                optionValue='id'
+                optionLabel='cubeName'
+              />
+            </div>
+            <div className="col-12 text-center bg-blue-100" style={{
+              backgroundColor: 'var(--highlight-bg)',
+              borderRadius: 'var(--border-radius)', borderBottomLeftRadius: "0", borderBottomRightRadius: "0"
+            }}>
+              <h6 className='m-0' style={{ color: 'black' }}>All Measures</h6>
+            </div>
+          
+            <div className="col-12 px-0 pt-0">
+            <div className="measure-list">
+              <div className="p-listbox-list-wrapper">
+                <ul className="p-listbox-list">
+                  {items.map((controlItem, index) => {
+                    return (
+                      <ControlItem
                         key={index}
-                        measure={measure.value}
-                        measureIndex={index}
-                        onMeasureDrop={handleMeasureDrop}
+                        index={index}
+                        controlItem={controlItem}
                       />
-                    ))}
-                  </div>
-                </div>
-                </DndProvider>
-              <div className="col-12" style={{ background: '#0abaf2' }}>
-                <h6 style={{ color: 'white' }}>Dimension</h6>
+                    );
+                  })}
+                </ul>
               </div>
-              <div className="col-12">
-                <Dropdown
-                  className='w-full'
-                  placeholder='Select One'
-                />
-              </div>
-              <div className="col-12" style={{ background: '#0abaf2' }}>
-                <h6 style={{ color: 'white' }}>All Dimension</h6>
-              </div>
-
+             </div>
+            </div>
+            <div className="col-12 text-center bg-blue-100" style={{
+              backgroundColor: 'var(--highlight-bg)',
+              borderRadius: 'var(--border-radius)', borderBottomLeftRadius: "0", borderBottomRightRadius: "0"
+            }}>
+              <h6 className='m-0' style={{ color: 'black' }}>Dimension</h6>
+            </div>
+            <div className="col-12 px-0 pt-0">
+              <Dropdown
+                style={{ borderTopLeftRadius: '0', borderTopRightRadius: '0' }}
+                className='w-full'
+                placeholder='Select One'
+                options={dimesionData}
+                onChange={(e) => setDimensionId(e.value)}
+                value={dimesionId}
+                optionValue='id'
+              />
+            </div>
+            <div className="col-12 text-center bg-blue-100" style={{
+              backgroundColor: 'var(--highlight-bg)',
+              borderRadius: 'var(--border-radius)', borderBottomLeftRadius: "0", borderBottomRightRadius: "0"
+            }}>
+              <h6 className='m-0' style={{ color: 'black' }}>All Dimension</h6>
+            </div>
+            <div className="col-12 px-0 pt-0">
+              <ListBox
+                style={{ borderTopLeftRadius: "0" }}
+                value={selectedCity}
+                onChange={(e) => setSelectedCity(e.value)}
+                options={items}
+                className="w-full"
+                listStyle={{ height: '170px' }}
+              />
             </div>
           </div>
-          <div className="col-1"></div>
-          <div className="col-3">
-          <div ref={measurePageRef} className="grid">
-            <h6 style={{ color: 'white' }}>Measures</h6>
-            <DroppableMeasuresPage onMeasureDrop={handleMeasureDrop} />
+          <div className="col-3 ">
+            <div className="col-12  text-center bg-blue-100" style={{
+              backgroundColor: 'var(--highlight-bg)',
+              borderRadius: 'var(--border-radius)', borderBottomLeftRadius: "0", borderBottomRightRadius: "0"
+            }}>
+              <h6 className='m-0' style={{ color: 'black' }}>Measures</h6>
+            </div>
+            <div className="col-12 px-0 pt-0">
+              <div style={{width: '38vh', height:'15vh', border:'1px solid #ced4da'}}></div>
+            </div>
+            <div className="col-12  text-center bg-blue-100" style={{
+              backgroundColor: 'var(--highlight-bg)',
+              borderRadius: 'var(--border-radius)', borderBottomLeftRadius: "0", borderBottomRightRadius: "0"
+            }}>
+              <h6 className='m-0' style={{ color: 'black' }}>Dimensions</h6>
+            </div>
+            <div className="col-12 px-0 pt-0">
+              <ListBox
+                style={{ borderTopLeftRadius: "0" }}
+                value={selectedCity}
+                onChange={(e) => setSelectedCity(e.value)}
+                options={items}
+                className="w-full"
+                listStyle={{ height: '153px' }}
+              />
+            </div>
+            <div className="col-12  text-center bg-blue-100" style={{
+              backgroundColor: 'var(--highlight-bg)',
+              borderRadius: 'var(--border-radius)', borderBottomLeftRadius: "0", borderBottomRightRadius: "0"
+            }}>
+              <h6 className='m-0' style={{ color: 'black' }}>Filter</h6>
+            </div>
+            <div className="col-12 px-0 pt-0">
+              <ListBox
+                style={{ borderTopLeftRadius: "0" }}
+                value={selectedCity}
+                onChange={(e) => setSelectedCity(e.value)}
+                options={items}
+                className="w-full"
+                listStyle={{ height: '153px' }}
+              />
+            </div>
           </div>
-          </div>
-          <div className="col-1"></div>
-          <div className="col-4">
-            <div className="grid">
-              <div className="col-12" style={{ background: '#0abaf2' }}>
-                <h6 style={{ color: 'white' }}>Charts</h6>
-              </div>
+          <div className="col-6 ">
+            <div className="col-12  text-center bg-blue-100" style={{
+              backgroundColor: 'var(--highlight-bg)',
+              borderRadius: 'var(--border-radius)', borderBottomLeftRadius: "0", borderBottomRightRadius: "0"
+            }}>
+              <h6 className='m-0' style={{ color: 'black' }}>Charts</h6>
             </div>
           </div>
         </div>

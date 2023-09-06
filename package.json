@@ -3,16 +3,25 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "dev": "env-cmd -f env/.env.local next dev -p 4000",
+    "build": "env-cmd -f env/.env.local next build",
+    "start": "env-cmd -f env/.env.local next start",
+    "lint": "env-cmd -f env/.env.local next lint",
+    "dev:qa": "env-cmd -f env/.env.qa next dev",
+    "build:qa": "env-cmd -f env/.env.qa next build",
+    "start:qa": "env-cmd -f env/.env.qa next start",
+    "lint:qa": "env-cmd -f env/.env.qa next lint",
+    "dev:prod": "env-cmd -f env/.env.production next dev",
+    "build:prod": "env-cmd -f env/.env.production next build",
+    "start:prod": "env-cmd -f env/.env.production next start",
+    "lint:prod": "env-cmd -f env/.env.production next lint"
   },
   "dependencies": {
     "@types/node": "20.5.4",
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",
     "@types/react-transition-group": "^4.4.1",
+    "axios": "^1.5.0",
     "chart.js": "4.2.1",
     "eslint": "8.47.0",
     "eslint-config-next": "13.4.19",
@@ -27,7 +36,8 @@
     "react-dom": "18.2.0",
     "sass": "1.62.1",
     "typescript": "5.1.6",
-    "yup": "^1.2.0"
+    "yup": "^1.2.0",
+    "env-cmd":"^10.1.0"
   },
   "devDependencies": {
     "sass": "^1.58.3"
