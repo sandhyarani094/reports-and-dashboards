@@ -20,7 +20,7 @@ interface FactMappingDetailProps {
 const FactMappingDetail: React.FC<FactMappingDetailProps> = ({
   activeIndex, setActiveIndex, factTableMappingData, setFactTableMappingData
 }) => {
-  const [factTableMappingArray, setFactTableMappingArray] = useState([]);
+  const [factTableMappingArray, setFactTableMappingArray] = useState<any>([]);
   const [isAdded, setIsAdded] = useState(false);
 
   const factMappingValidationSchema = Yup.object().shape({
@@ -62,7 +62,7 @@ const FactMappingDetail: React.FC<FactMappingDetailProps> = ({
     { field: "destinationColumn.columnName", header: "Destination Column" },
   ];
 
-  const handleSave = (values, formikHelpers: FormikHelpers<FactMappingData>) => {
+  const handleSave = (values: FactMappingData, formikHelpers: FormikHelpers<FactMappingData>) => {
     formikHelpers.resetForm();
     setFactTableMappingArray([...factTableMappingArray, values]);
     setIsAdded(true);
@@ -103,7 +103,7 @@ const FactMappingDetail: React.FC<FactMappingDetailProps> = ({
                         setFieldValue("sourceColumn", new ColumnMetaData());
                         setFieldValue("destinationTable", new ColumnMetaData());
                       }}
-                      value={values.sourceTable}
+                      value={values?.sourceTable}
                     />
                     {getErrorMessageOnValidation(errors, touched, 'sourceTable.tableName')}
                   </div>
@@ -122,7 +122,7 @@ const FactMappingDetail: React.FC<FactMappingDetailProps> = ({
                       placeholder="Choose One"
                       options={joinTypes}
                       onChange={handleChange}
-                      value={values.joinType}
+                      value={values?.joinType}
                     />
                     {getErrorMessageOnValidation(errors, touched, 'joinType')}
                   </div>
@@ -139,14 +139,14 @@ const FactMappingDetail: React.FC<FactMappingDetailProps> = ({
                         ),
                       })}
                       placeholder="Choose One"
-                      options={sourceTableOptions.filter((sourceTable) => sourceTable.tableName !== values.sourceTable.tableName)}
+                      options={sourceTableOptions.filter((sourceTable) => sourceTable?.tableName !== values?.sourceTable?.tableName)}
                       optionLabel="tableName"
                       emptyMessage="Please Choose From Source Table first"
                       onChange={(e) => {
                         handleChange(e);
                         setFieldValue("destinationColumn", new ColumnMetaData());
                       }}
-                      value={values.destinationTable}
+                      value={values?.destinationTable}
                     />
                     {getErrorMessageOnValidation(errors, touched, 'destinationTable.tableName')}
                   </div>
@@ -164,10 +164,10 @@ const FactMappingDetail: React.FC<FactMappingDetailProps> = ({
                       })}
                       placeholder="Choose One"
                       emptyMessage="Please Choose From Source Table first"
-                      options={values.sourceTable?.columns}
+                      options={values?.sourceTable?.columns}
                       optionLabel="columnName"
                       onChange={handleChange}
-                      value={values.sourceColumn}
+                      value={values?.sourceColumn}
                     />
                     {getErrorMessageOnValidation(errors, touched, 'sourceColumn.columnName')}
                   </div>
@@ -184,11 +184,11 @@ const FactMappingDetail: React.FC<FactMappingDetailProps> = ({
                         ),
                       })}
                       placeholder="Choose One"
-                      options={values.destinationTable?.columns}
+                      options={values?.destinationTable?.columns}
                       optionLabel="columnName"
                       emptyMessage="Please Choose From Destination Table first"
                       onChange={handleChange}
-                      value={values.destinationColumn}
+                      value={values?.destinationColumn}
                     />
                     {getErrorMessageOnValidation(errors, touched, 'destinationColumn.columnName')}
                   </div>

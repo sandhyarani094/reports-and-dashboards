@@ -1,10 +1,10 @@
 import { Connection } from "@/shared/constants/models/Connection";
-import { HttpService } from "./HttpService";
+import { httpService } from "./HttpService";
 import { AxiosResponse } from "axios";
 
 export class ConnectionService {
   private BASE_URL = "connections";
-  private httpService = new HttpService();
+  private httpService = new httpService();
 
   public getAll = async () => {
     try {
@@ -16,7 +16,7 @@ export class ConnectionService {
       throw error;
     }
   };
-  public getById = async (id) => {
+  public getById = async (id: number) => {
     try {
       const res: AxiosResponse = await this.httpService.getRequest(
         `${this.BASE_URL}/${id}`
@@ -56,6 +56,7 @@ export class ConnectionService {
       const res: AxiosResponse = await this.httpService.deleteRequest(
         `${this.BASE_URL}/${id}`
       );
+      return res.data;
     } catch (error) {
       throw error;
     }

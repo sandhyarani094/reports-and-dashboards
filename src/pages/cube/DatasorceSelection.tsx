@@ -1,5 +1,4 @@
-import { ConnectionService } from "@/HttpServices/ConnectionService";
-import { CubeContext } from "@/common-layouts/context/cubeContext";
+import { ConnectionService } from "@/httpServices/ConnectionService";
 import { CubeDetails } from "@/shared/constants/models/Cube";
 import { Form, Formik } from "formik";
 import { Button } from "primereact/button";
@@ -62,13 +61,13 @@ const DatasourceSelection: React.FC<DatasourceSelectionProps> = ({
                       <Dropdown
                         name="connectionId"
                         options={datasources} // Use the datasources state for options
-                        value={values.connectionId}
+                        value={values?.connectionId}
                         optionLabel="connectionName"
                         className={"w-full"}
                         optionValue="id"
                         onChange={handleChange}
                         placeholder="Data Source"
-                        showClear={values.connectionId ? true : false}
+                        showClear={values?.connectionId? true : false}
                       />
                     </div>
                     <div className="col-6 field">
@@ -78,7 +77,7 @@ const DatasourceSelection: React.FC<DatasourceSelectionProps> = ({
                       <InputText
                         name="cubeName"
                         className={"w-full"}
-                        value={values.cubeName}
+                        value={values?.cubeName}
                         placeholder="Cube Name"
                         onChange={handleChange}
                       />
@@ -88,10 +87,11 @@ const DatasourceSelection: React.FC<DatasourceSelectionProps> = ({
               </div>
               <div className="col-12 text-right">
                 <Button
-                  label="Save  & Next"
+                  label="Save & Next"
                   type="submit"
                   className="ml-2"
                   size="small"
+                  disabled = {values?.connectionId?.length === 0 || !values?.cubeName}
                   onClick={() => {
                     handleSave(values);
                   }}

@@ -1,4 +1,4 @@
-import { ComponentService } from '@/HttpServices/componentService';
+import { ComponentService } from '@/httpServices/ComponentService';
 import { Dropdown } from 'primereact/dropdown'
 import { ListBox } from 'primereact/listbox';
 import React, { useEffect, useState } from 'react'

@@ -9,7 +9,8 @@ import { showToaster } from "@/shared/constants/services/ToastService";
 import React, { useEffect, useState, useContext } from "react";
 import { confirmDialog } from "primereact/confirmdialog";
 import { ToastContext } from "@/common-layouts/context/toasterContext";
-import { ConnectionService } from "@/HttpServices/ConnectionService";
+import { ConnectionService } from "@/httpServices/ConnectionService";
+import { Connection } from "@/shared/constants/models/Connection";
 const ConnectionPage = () => {
   const [data, setData] = useState([]);
   const router = useRouter();
@@ -17,6 +18,8 @@ const ConnectionPage = () => {
   const connectionSerice = new ConnectionService();
   const [globalFilter, setGlobalFilter] = useState("");
   const [connectionDatas, setConnectionDatas] = useState([]);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  
   const columns = [
     { field: "connectionName", header: "Connection Name" },
     { field: "dbType", header: "Driver Type" },
@@ -70,25 +73,33 @@ const ConnectionPage = () => {
       query: { editId: rowData.id },
     });
   };
-
-  const handleDelete = (rowData: any) => {
-    showToaster(
-      toastRef,
-      "warn",
-      "Warning!",
-      (
-        <div className="flex flex-column align-items-center" style={{ flex: '1' }}>
-          <div className="text-center">
-            <i className="pi pi-exclamation-triangle" style={{ fontSize: '2rem' }}></i>
-            <div className="font-bold text-xl my-3">Are you sure to remove <b>{rowData.connectionName}</b>?</div>
-          </div>
-          <div className="flex gap-2">
-            <Button onClick={(e) => deleteEvent(rowData.id)} type="button" label="Confirm" className="p-button-success w-7rem" />
-            <Button onClick={(e) => toastRef.current.clear()} type="button" label="Cancel" className="p-button-warning w-5rem" />
-          </div>
+  const handleDelete = (rowData:Connection) => {
+    setShowDeleteConfirmation(true);
+    console.log(rowData);
+    const toasterContent = (
+      <div className="flex flex-column align-items-center" style={{ flex: '1' }}>
+        <div className="text-center">
+          <i className="pi pi-exclamation-triangle" style={{ fontSize: '2rem' }}></i>
+          <div className="font-bold text-xl my-3">Are you sure to remove <b>{rowData.connectionName}</b>?</div>
         </div>
-      )
+        <div className="flex gap-2">
+          <Button onClick={(e) => {
+            deleteEvent(rowData.id);
+            toastRef.current.clear();
+          }} type="button" label="Confirm" className="p-button-success w-7rem" />
+          <Button onClick={(e) => {
+            setShowDeleteConfirmation(false);
+            toastRef.current.clear();
+          }} type="button" label="Cancel" className="p-button-warning w-rem" />
+        </div>
+      </div>
     );
+    if (showDeleteConfirmation) {
+      showToaster(toastRef, "warn", "Warning!", toasterContent);
+    }
+  };
+  
+    
 
     const deleteEvent = (rowDataId) =>{
       connectionSerice.delete(rowDataId).then((res) => {
@@ -99,10 +110,11 @@ const ConnectionPage = () => {
           "Success",
           "Connection Removed"
         );
+        findAllConnection();
       });
     }
 
-  };
+  
 
   return (
     <div>

@@ -64,6 +64,10 @@ const CubePage = () => {
       label: "Fact Dimension Mapping",
       content: <MappingTablesPage />,
     },
+    {
+      label:"Preview",
+      content:<MappingTablesPage/>
+    }
   ];
 
   return (
@@ -74,7 +78,8 @@ const CubePage = () => {
           model={tabs}
           activeIndex={activeIndex}
           onSelect={(e) => setActiveIndex(e.index)}
-          readOnly={isTabActive ? false : true}
+          readOnly={true}
+          
         />
         <div className="col-12 p-5">{tabs[activeIndex].content}</div>
       </div>

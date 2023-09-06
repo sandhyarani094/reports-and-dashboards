@@ -1,5 +1,4 @@
-import { ConnectionService } from "@/HttpServices/ConnectionService";
-import { CubeService } from "@/HttpServices/CubeService";
+import { CubeService } from "@/httpServices/CubeService";
 import { createContext, useState } from "react";
 
 export const CubeContext = createContext({} as any);

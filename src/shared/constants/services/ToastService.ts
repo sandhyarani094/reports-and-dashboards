@@ -10,6 +10,6 @@ export const showToaster = (
         severity: severity,
         summary: header,
         detail: content,
-        life: 1000,
+        life: 3000,
     });
 };

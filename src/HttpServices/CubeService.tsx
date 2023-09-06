@@ -1,9 +1,8 @@
 import { AxiosResponse } from "axios";
-import { HttpService } from "./HttpService";
-
+import { httpService } from "./HttpService";
 export class CubeService {
     private BASE_URL = "metadata";
-    private httpService = new HttpService();
+    private httpService = new httpService();
   
     public getAllTablesByConnection = async (connectionId) => {
       try {

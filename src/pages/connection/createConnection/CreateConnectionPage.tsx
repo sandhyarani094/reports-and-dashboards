@@ -16,8 +16,8 @@ import React, { useEffect, useState, useContext } from "react";
 import { classNames } from "primereact/utils";
 import * as Yup from "yup";
 import { InputNumber } from "primereact/inputnumber";
-import { ConnectionService } from "@/HttpServices/ConnectionService";
 import { error } from "console";
+import { ConnectionService } from "@/httpServices/ConnectionService";
 
 const CreateConnectionPage = () => {
   const router = useRouter();

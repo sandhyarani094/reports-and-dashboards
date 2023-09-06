@@ -4,7 +4,7 @@ import { ColumnMetaData, TableMetaData } from "./TableMetaData";
 
 export class CubeDetails {
     cubeName: string = "";
-    connectionId: string = '';
+    connectionId?:string="";
     cubeFactList: Factdetails = new Factdetails();
 }
 export class DataSource {

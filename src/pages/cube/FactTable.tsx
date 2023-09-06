@@ -1,4 +1,3 @@
-import { CubeService } from "@/HttpServices/CubeService";
 import { CubeContext } from "@/common-layouts/context/cubeContext";
 import { CubeDetails, Factdetails } from "@/shared/constants/models/Cube";
 import {
@@ -21,6 +20,7 @@ import * as Yup from "yup";
 import { Dialog } from "primereact/dialog";
 import { InputSwitch, InputSwitchChangeEvent } from "primereact/inputswitch";
 import { table } from "console";
+import { CubeService } from "@/httpServices/CubeService";
 
 interface FactTableProps {
   setActiveIndex: Function;
