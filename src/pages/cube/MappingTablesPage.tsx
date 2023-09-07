@@ -1,4 +1,4 @@
-import { MappingTable } from '@/shared/constants/models/Cube';
+import { DimesionMapping, Factdetails } from '@/shared/constants/models/Cube';
 import { ColumnMetaData } from '@/shared/constants/models/TableMetaData';
 import { isFormFieldInvalid, getErrorMessageOnValidation } from '@/shared/constants/services/UtilService';
 import { Formik, Form, FormikHelpers } from 'formik';
@@ -6,14 +6,23 @@ import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
 import { classNames } from 'primereact/utils';
 import React from 'react'
+interface DimensionMappingDetailProps {
+    dimensionDetails: Factdetails,
+    setDimensionDetails: Function;
+    dimensionMappingData: DimesionMapping,
+    setDimensionMappingData: Function;
 
-const MappingTablesPage = () => {
+}
+const MappingTablesPage: React.FC<DimensionMappingDetailProps> = ({
+    dimensionDetails, setDimensionDetails, dimensionMappingData, setDimensionMappingData
+}) => {
+
     const sourceTableOptions = [
         { tableName: "Account", columns: [{ columnName: "Account Id" }, { columnName: "Account Name" }, { columnName: "Account Branch" }] },
         { tableName: "Lead", columns: [{ columnName: "Lead Id" }, { columnName: "Lead Name" }, { columnName: "Lead Status" }] },
         { tableName: "Opportunity", columns: [{ columnName: "Opportunity Id" }, { columnName: "Opportunity Name" }, { columnName: "Stages" }] },
         { tableName: "Contact", columns: [{ columnName: "Contact Id" }, { columnName: "Contact Name" }, { columnName: "Contact Address" }] },
-      ];
+    ];
     const joinTypes = [
         "INNER JOIN",
         "LEFT JOIN",
@@ -23,14 +32,17 @@ const MappingTablesPage = () => {
         "SELF JOIN",
         "NATURAL JOIN"
     ];
-    function handleSave(values: any, formikHelpers: FormikHelpers<MappingTable>) {
+    function handleSave(values: any, formikHelpers: FormikHelpers<DimesionMapping>) {
         formikHelpers.resetForm();
     }
+
+    console.log(dimensionDetails.selectedFactTables);
+    
 
     return (
         <div>
             <Formik
-                initialValues={new MappingTable()}
+                initialValues={dimensionMappingData}
                 onSubmit={(values, formikHelpers) => {
                     handleSave(values, formikHelpers); // Always call handleSave for new data
                 }}
@@ -42,27 +54,23 @@ const MappingTablesPage = () => {
                         <div className="grid">
                             <div className="col-6 field required">
                                 <label htmlFor="name" className="ml-1">
-                                Dimension Table
+                                    Fact Column
                                 </label>
                                 <Dropdown
-                                    name="dimensionTable"
+                                    name="factColumn"
                                     className={classNames("w-full", {
                                         "p-invalid": isFormFieldInvalid(
-                                            errors.dimensionTable,
-                                            touched.dimensionTable
+                                            errors.factColumn,
+                                            touched.factColumn
                                         ),
                                     })}
-                                    placeholder="Choose from List"
-                                    options={sourceTableOptions}
-                                    optionLabel="tableName"
-                                    onChange={(e) => {
-                                        handleChange(e);
-                                        setFieldValue("factColumn", new ColumnMetaData());
-                                        setFieldValue("dimensionColumn", new ColumnMetaData());
-                                    }}
-                                    value={values.dimensionTable}
+                                    placeholder="Choose One"
+                                    options={dimensionDetails.selectedFactTables}
+                                    optionLabel="columnName"
+                                    onChange={handleChange}
+                                    value={values.factColumn}
                                 />
-                                {getErrorMessageOnValidation(errors, touched, 'sourceTable.tableName')}
+                                {getErrorMessageOnValidation(errors, touched, 'factColumn.columnName')}
                             </div>
                             <div className="col-6 field required">
                                 <label htmlFor="name" className="ml-1">
@@ -85,50 +93,52 @@ const MappingTablesPage = () => {
                             </div>
                             <div className="col-6 field required">
                                 <label htmlFor="name" className="ml-1">
-                                Dimension Column
+                                    Dimension Table
                                 </label>
                                 <Dropdown
-                                    name="dimensionColumn"
+                                    name="dimTable"
                                     className={classNames("w-full", {
                                         "p-invalid": isFormFieldInvalid(
-                                            errors.dimensionColumn,
-                                            touched.dimensionColumn
+                                            errors.dimTable,
+                                            touched.dimTable
+                                        ),
+                                    })}
+                                    placeholder="Choose from List"
+                                    options={dimensionDetails.factTables}
+                                    optionLabel="tableName"
+                                    onChange={(e) => {
+                                        handleChange(e);
+                                        setFieldValue("factColumn", new ColumnMetaData());
+                                        setFieldValue("dimColumn", new ColumnMetaData());
+                                    }}
+                                    value={values.dimTable}
+                                />
+                                {getErrorMessageOnValidation(errors, touched, 'sourceTable.tableName')}
+                            </div>
+                            <div className="col-6 field required">
+                                <label htmlFor="name" className="ml-1">
+                                    Dimension Column
+                                </label>
+                                <Dropdown
+                                    name="dimColumn"
+                                    className={classNames("w-full", {
+                                        "p-invalid": isFormFieldInvalid(
+                                            errors.dimColumn,
+                                            touched.dimColumn
                                         ),
                                     })}
                                     placeholder="Choose One"
-                                    options={values.dimensionTable.columns}
+                                    options={values.dimTable.columns}
                                     optionLabel="columnName"
                                     emptyMessage="Please Choose From Source Table first"
                                     onChange={(e) => {
                                         handleChange(e);
                                         setFieldValue("destinationColumn", new ColumnMetaData());
                                     }}
-                                    value={values.dimensionColumn}
+                                    value={values.dimColumn}
                                 />
-                                {getErrorMessageOnValidation(errors, touched, 'dimensionColumn.tableName')}
+                                {getErrorMessageOnValidation(errors, touched, 'dimColumn.tableName')}
                             </div>
-                            <div className="col-6 field required">
-                                <label htmlFor="name" className="ml-1">
-                                    Fact Column
-                                </label>
-                                <Dropdown
-                                    name="factColumn"
-                                    className={classNames("w-full", {
-                                        "p-invalid": isFormFieldInvalid(
-                                            errors.factColumn,
-                                            touched.factColumn
-                                        ),
-                                    })}
-                                    placeholder="Choose One"
-                                    emptyMessage="Please Choose From Source Table first"
-                                    options={values.dimensionTable.columns}
-                                    optionLabel="columnName"
-                                    onChange={handleChange}
-                                    value={values.factColumn}
-                                />
-                                {getErrorMessageOnValidation(errors, touched, 'factColumn.columnName')}
-                            </div>
-                            
                             <div className="col-12 text-right">
                                 <Button
                                     size="small"
@@ -148,7 +158,7 @@ const MappingTablesPage = () => {
                         </div>
                     </Form>
                 )}
-            </Formik> z
+            </Formik>
         </div>
     )
 }

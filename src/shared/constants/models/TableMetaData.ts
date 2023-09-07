@@ -8,7 +8,9 @@ export class TableMetaData {
 export class ColumnMetaData {
     id: number;
     columnName: string = "";
+    aliasName:string ='';
     headerName: string = "";
     dataType: string = "";
     constraints: string = "";
+    isSelected: boolean = false;
 }

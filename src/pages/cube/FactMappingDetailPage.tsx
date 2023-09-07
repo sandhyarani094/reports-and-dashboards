@@ -2,7 +2,7 @@ import { Dropdown } from "primereact/dropdown";
 import React, { useState, useEffect } from "react";
 import { Button } from "primereact/button";
 import { Formik, Form, FormikHelpers } from "formik";
-import { FactMappingData } from "@/shared/constants/models/Cube";
+import { FactMappingData, Factdetails } from "@/shared/constants/models/Cube";
 import * as Yup from 'yup';
 import { getErrorMessageOnValidation, isFormFieldInvalid } from "@/shared/constants/services/UtilService";
 import { classNames } from "primereact/utils";
@@ -16,18 +16,23 @@ interface FactMappingDetailProps {
   activeIndex: number,
   factTableMappingData: FactMappingData,
   setFactTableMappingData: Function;
+  factDetails: Factdetails,
+  setFactdetails: Function;
+  isAdded: Boolean,
+  setIsAdded: Function
+  factTableMappingArray: Array<FactMappingData>,
+  setFactTableMappingArray: Function
 }
 const FactMappingDetail: React.FC<FactMappingDetailProps> = ({
-  activeIndex, setActiveIndex, factTableMappingData, setFactTableMappingData
+  activeIndex, setActiveIndex, factTableMappingData, setFactTableMappingData,
+  factDetails, setFactdetails, isAdded, setIsAdded, factTableMappingArray, setFactTableMappingArray
 }) => {
-  const [factTableMappingArray, setFactTableMappingArray] = useState<any>([]);
-  const [isAdded, setIsAdded] = useState(false);
 
   const factMappingValidationSchema = Yup.object().shape({
     sourceTable: Yup.object<TableMetaData>().shape({
       tableName: Yup.string().required('Required'),
     }),
-    joinType: Yup.string().required('Required'),
+    relation: Yup.string().required('Required'),
     destinationTable: Yup.object<TableMetaData>().shape({
       tableName: Yup.string().required('Required'),
     }),
@@ -48,15 +53,9 @@ const FactMappingDetail: React.FC<FactMappingDetailProps> = ({
     "NATURAL JOIN"
   ];
 
-  const sourceTableOptions = [
-    { tableName: "Account", columns: [{ columnName: "Account Id" }, { columnName: "Account Name" }, { columnName: "Account Branch" }] },
-    { tableName: "Lead", columns: [{ columnName: "Lead Id" }, { columnName: "Lead Name" }, { columnName: "Lead Status" }] },
-    { tableName: "Opportunity", columns: [{ columnName: "Opportunity Id" }, { columnName: "Opportunity Name" }, { columnName: "Stages" }] },
-    { tableName: "Contact", columns: [{ columnName: "Contact Id" }, { columnName: "Contact Name" }, { columnName: "Contact Address" }] },
-  ];
   const gridColumns = [
     { field: "sourceTable.tableName", header: "Source Table" },
-    { field: "joinType", header: "Relation Option" },
+    { field: "relation", header: "Relation Option" },
     { field: "destinationTable.tableName", header: "Destination Table" },
     { field: "sourceColumn.columnName", header: "Source Column" },
     { field: "destinationColumn.columnName", header: "Destination Column" },
@@ -67,6 +66,11 @@ const FactMappingDetail: React.FC<FactMappingDetailProps> = ({
     setFactTableMappingArray([...factTableMappingArray, values]);
     setIsAdded(true);
   };
+  const handleSaveAndNext = () => {
+    setActiveIndex(activeIndex + 1);
+    setIsAdded(true);
+  }
+  console.log(factDetails?.factTables);
 
   return (
     <>
@@ -83,7 +87,7 @@ const FactMappingDetail: React.FC<FactMappingDetailProps> = ({
             {({ values, errors, touched, handleChange, handleReset, setFieldValue }) => (
               <Form>
                 <div className="grid">
-                  <div className="col-4 field required">
+                  <div className="col-6 field required">
                     <label htmlFor="name" className="ml-1">
                       Source Table
                     </label>
@@ -96,7 +100,7 @@ const FactMappingDetail: React.FC<FactMappingDetailProps> = ({
                         ),
                       })}
                       placeholder="Choose from List"
-                      options={sourceTableOptions}
+                      options={factDetails?.factTables}
                       optionLabel="tableName"
                       onChange={(e) => {
                         handleChange(e);
@@ -107,50 +111,7 @@ const FactMappingDetail: React.FC<FactMappingDetailProps> = ({
                     />
                     {getErrorMessageOnValidation(errors, touched, 'sourceTable.tableName')}
                   </div>
-                  <div className="col-4 field required">
-                    <label htmlFor="name" className="ml-1">
-                      Relation
-                    </label>
-                    <Dropdown
-                      name="joinType"
-                      className={classNames("w-full", {
-                        "p-invalid": isFormFieldInvalid(
-                          errors.joinType,
-                          touched.joinType
-                        ),
-                      })}
-                      placeholder="Choose One"
-                      options={joinTypes}
-                      onChange={handleChange}
-                      value={values?.joinType}
-                    />
-                    {getErrorMessageOnValidation(errors, touched, 'joinType')}
-                  </div>
-                  <div className="col-4 field required">
-                    <label htmlFor="name" className="ml-1">
-                      Destination Table
-                    </label>
-                    <Dropdown
-                      name="destinationTable"
-                      className={classNames("w-full", {
-                        "p-invalid": isFormFieldInvalid(
-                          errors.destinationTable,
-                          touched.destinationTable
-                        ),
-                      })}
-                      placeholder="Choose One"
-                      options={sourceTableOptions.filter((sourceTable) => sourceTable?.tableName !== values?.sourceTable?.tableName)}
-                      optionLabel="tableName"
-                      emptyMessage="Please Choose From Source Table first"
-                      onChange={(e) => {
-                        handleChange(e);
-                        setFieldValue("destinationColumn", new ColumnMetaData());
-                      }}
-                      value={values?.destinationTable}
-                    />
-                    {getErrorMessageOnValidation(errors, touched, 'destinationTable.tableName')}
-                  </div>
-                  <div className="col-4 field required">
+                  <div className="col-6 field required">
                     <label htmlFor="name" className="ml-1">
                       Source Column
                     </label>
@@ -171,7 +132,31 @@ const FactMappingDetail: React.FC<FactMappingDetailProps> = ({
                     />
                     {getErrorMessageOnValidation(errors, touched, 'sourceColumn.columnName')}
                   </div>
-                  <div className="col-4 field required">
+                  <div className="col-6 field required">
+                    <label htmlFor="name" className="ml-1">
+                      Destination Table
+                    </label>
+                    <Dropdown
+                      name="destinationTable"
+                      className={classNames("w-full", {
+                        "p-invalid": isFormFieldInvalid(
+                          errors.destinationTable,
+                          touched.destinationTable
+                        ),
+                      })}
+                      placeholder="Choose One"
+                      options={factDetails?.factTables.filter((factTable) => factTable.tableName !== values.sourceTable.tableName)}
+                      optionLabel="tableName"
+                      emptyMessage="Please Choose From Source Table first"
+                      onChange={(e) => {
+                        handleChange(e);
+                        setFieldValue("destinationColumn", new ColumnMetaData());
+                      }}
+                      value={values.destinationTable}
+                    />
+                    {getErrorMessageOnValidation(errors, touched, 'destinationTable.tableName')}
+                  </div>
+                  <div className="col-6 field required">
                     <label htmlFor="name" className="ml-1">
                       Destination Column
                     </label>
@@ -192,18 +177,48 @@ const FactMappingDetail: React.FC<FactMappingDetailProps> = ({
                     />
                     {getErrorMessageOnValidation(errors, touched, 'destinationColumn.columnName')}
                   </div>
-                  <div className="col-4 field">
+                  <div className="col-6 field required">
+                    <label htmlFor="name" className="ml-1">
+                      Relation
+                    </label>
+                    <Dropdown
+                      name="relation"
+                      className={classNames("w-full", {
+                        "p-invalid": isFormFieldInvalid(
+                          errors.relation,
+                          touched.relation
+                        ),
+                      })}
+                      placeholder="Choose One"
+                      options={joinTypes}
+                      onChange={handleChange}
+                      value={values.relation}
+                    />
+                    {getErrorMessageOnValidation(errors, touched, 'relation')}
+                  </div>
+                  <div className="col-6 field">
                     <label className="w-full">  Alias  </label>
                     <InputText
                       type="text"
                       placeholder="Enter alias"
-                      name="alias"
+                      name="aliasName"
                       className="w-full"
-                      value={values?.alias}
+                      value={values?.aliasName}
                       onChange={handleChange}
                     />
                   </div>
-                  <div className="col-12 text-right">
+                  <div className="col-6 inline-block">
+                    <Button
+                      size="small"
+                      label="Back"
+                      icon="pi pi-angle-left"
+                      type="button"
+                      className="mr-2"
+                      onClick={() => setActiveIndex(activeIndex - 1)}
+                      outlined
+                    />
+                  </div>
+                  <div className="col-6 inline-block text-right">
                     <Button
                       size="small"
                       label="Reset"
@@ -216,7 +231,7 @@ const FactMappingDetail: React.FC<FactMappingDetailProps> = ({
                     {factTableMappingArray.length > 0 ?
                       <Button
                         size="small"
-                        label="Back"
+                        label="Cancel"
                         type="button"
                         className="mr-2"
                         onClick={() => setIsAdded(true)}
@@ -251,6 +266,7 @@ const FactMappingDetail: React.FC<FactMappingDetailProps> = ({
               rowsPerPageOptions={[5, 10, 25, 50]}
               scrollable={true}
               scrollHeight={"20rem"}
+              alwaysShowPaginator={false}
             >
 
               {gridColumns.map((column, index) => (
@@ -269,15 +285,24 @@ const FactMappingDetail: React.FC<FactMappingDetailProps> = ({
               ))}
 
             </DataTable>
-            <div className="col-12 text-right">
+            <div className="col-6 inline-block">
+              <Button
+                size="small"
+                label="Back"
+                icon="pi pi-angle-left"
+                type="button"
+                className="mr-2"
+                onClick={() => setActiveIndex(activeIndex - 1)}
+                outlined
+              />
+            </div>
+            <div className="col-6 inline-block text-right">
               <Button
                 label="Save and Next "
                 type="submit"
                 className="ml-2"
                 size="small"
-                onClick={()=>{
-                  setActiveIndex(activeIndex + 1); // Increment activeIndex
-                }}
+                onClick={handleSaveAndNext}
               />
             </div>
           </>
