@@ -300,7 +300,7 @@ const CreateConnectionPage = () => {
                     />
                     {getErrorMessageOnValidation(errors, touched, "password")}
                   </div>
-                  <div className="col-6 field required">
+                  <div className="col-6 field">
                     <label htmlFor="name" className="ml-1">
                       Service Id
                     </label>

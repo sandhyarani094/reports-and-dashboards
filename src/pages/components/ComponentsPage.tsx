@@ -187,9 +187,9 @@ const ComponentsPage = () => {
               <h6 className='m-0' style={{ color: 'black' }}>Measures</h6>
             </div>
             <div
-              className='col-3 mb-3'
+              className='col-3 mb-3 w-full'
               ref={drop}
-              style={{ width: '38vh', height: '25vh', border: '1px solid #ced4da', overflow: "auto", borderRadius:"4%" }}
+              style={{ height: '25vh', border: '1px solid #ced4da', overflow: "auto", borderRadius:"4%" }}
             >
               {droppedItems.map((item, index) => (
                 <div key={index} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
