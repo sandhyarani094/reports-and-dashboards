@@ -6,28 +6,39 @@ export class CubeDetails {
     cubeName: string = "";
     connectionId?:string="";
     cubeFactList: Factdetails = new Factdetails();
+    cubeFactMappingList: FactMappingData[] = [];
+    cubeDimensionList: Factdetails = new Factdetails();
+    cubeFactDimensionMappingList: DimesionMapping[] = [];
 }
 export class DataSource {
     cubeName: string = "";
     datasource: Connection = new Connection();
 }
+
+export class FactTable {
+    id: number;
+    tableName: string = "";
+    columns: ColumnMetaData[] = [];
+}
 export class Factdetails {
     factTables: TableMetaData[] = [];
-    selectedFactTable: TableMetaData[] = [];
-    factColumns: ColumnMetaData[] = [];
-    selectedFactColumn: ColumnMetaData[] = [];
+    selectedFactTable: TableMetaData = new TableMetaData();
+    cubeFactDetails: FactTable[] =[]; 
+    selectedFactColumns: ColumnMetaData[] = [];
+    selectedFactTables: any = {};
 }
 export class FactMappingData {
+    id: number;
     sourceTable: TableMetaData = new TableMetaData();
-    joinType: string = '';
-    destinationTable: TableMetaData = new TableMetaData();
     sourceColumn: ColumnMetaData = new ColumnMetaData();
+    relation: string = '';
+    destinationTable: TableMetaData = new TableMetaData();
     destinationColumn: ColumnMetaData = new ColumnMetaData();
-    alias: string = '';
+    aliasName: string = '';
 }
-export class MappingTable {
-    dimensionTable: TableMetaData = new TableMetaData();
-    dimensionColumn: ColumnMetaData = new ColumnMetaData();
+export class DimesionMapping {
     factColumn: ColumnMetaData = new ColumnMetaData();
     joinType: string = '';
+    dimTable: TableMetaData = new TableMetaData();
+    dimColumn: ColumnMetaData = new ColumnMetaData();
 }

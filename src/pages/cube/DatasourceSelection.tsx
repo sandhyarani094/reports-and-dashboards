@@ -1,4 +1,6 @@
+import { CubeContext } from "@/common-layouts/context/cubeContext";
 import { ConnectionService } from "@/httpServices/ConnectionService";
+import { CubeService } from "@/httpServices/CubeService";
 import { CubeDetails } from "@/shared/constants/models/Cube";
 import { Form, Formik } from "formik";
 import { Button } from "primereact/button";
@@ -12,14 +14,17 @@ interface DatasourceSelectionProps {
   activeIndex: number;
   dataSourceDetails: CubeDetails;
   setDataSourceDetails: Function;
+  setTables: Function;
 }
 const DatasourceSelection: React.FC<DatasourceSelectionProps> = ({
   setActiveTab,
   setActiveIndex,
   activeIndex,
-  dataSourceDetails, setDataSourceDetails
+  dataSourceDetails, setDataSourceDetails, setTables
 }) => {
   const connectionSerice = new ConnectionService();
+  const cubeService = new CubeService();
+
   const [datasources, setDatasources] = useState([]);
   useEffect(() => {
     findAllConnection();
@@ -27,8 +32,19 @@ const DatasourceSelection: React.FC<DatasourceSelectionProps> = ({
 
   const findAllConnection = () => {
     connectionSerice.getAll().then((res) => {
-        setDatasources(res);
-        console.log(res);
+      setDatasources(res);
+      console.log(res);
+    })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const findAllTables = (connectionId) => {
+    cubeService
+      .getAllTablesByConnection(connectionId)
+      .then((res) => {
+        setTables(res);
       })
       .catch((err) => {
         console.log(err);
@@ -36,7 +52,7 @@ const DatasourceSelection: React.FC<DatasourceSelectionProps> = ({
   };
   const handleSave = (values: any) => {
     setDataSourceDetails(values);
-    setActiveIndex(activeIndex + 1); // Increment activeIndex
+    setActiveIndex(activeIndex + 1);
     setActiveTab(true);
   };
   return (
@@ -65,9 +81,12 @@ const DatasourceSelection: React.FC<DatasourceSelectionProps> = ({
                         optionLabel="connectionName"
                         className={"w-full"}
                         optionValue="id"
-                        onChange={handleChange}
+                        onChange={e => {
+                          handleChange(e);
+                          findAllTables(e.value);
+                        }}
                         placeholder="Data Source"
-                        showClear={values?.connectionId? true : false}
+                        showClear={values?.connectionId ? true : false}
                       />
                     </div>
                     <div className="col-6 field">
@@ -91,7 +110,7 @@ const DatasourceSelection: React.FC<DatasourceSelectionProps> = ({
                   type="submit"
                   className="ml-2"
                   size="small"
-                  disabled = {values?.connectionId?.length === 0 || !values?.cubeName}
+                  disabled={values?.connectionId?.length === 0 || !values?.cubeName}
                   onClick={() => {
                     handleSave(values);
                   }}

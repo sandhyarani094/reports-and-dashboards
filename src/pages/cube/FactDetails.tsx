@@ -8,11 +8,12 @@ import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { Fieldset } from "primereact/fieldset";
+import { useEffect, useState } from "react";
 import * as Yup from "yup";
 import { MultiSelect } from "primereact/multiselect";
 import { classNames } from "primereact/utils";
 import { InputText } from "primereact/inputtext";
-import { getErrorMessageOnValidation, isFormFieldInvalid } from "@/shared/constants/services/UtilService";
+import { isFormFieldInvalid, getErrorMessageOnValidation } from "@/shared/constants/services/UtilService";
 
 interface FactTableProps {
   setActiveIndex: Function;
@@ -20,51 +21,50 @@ interface FactTableProps {
   tables: TableMetaData[];
   setTables: Function;
   dataSourceDetails: CubeDetails;
-  dimensionDetails: Factdetails,
-  setDimensionDetails: Function;
+  factDetails: Factdetails,
+  setFactdetails: Function;
 }
-const DimensionPage: React.FC<FactTableProps> = ({
+const FactDetails: React.FC<FactTableProps> = ({
   activeIndex,
   setActiveIndex,
-  tables, dimensionDetails, setDimensionDetails
+  tables,
+  setTables,
+  dataSourceDetails, factDetails, setFactdetails
 }) => {
- 
+
   const tablesDataGrid = [{ field: "tableName", header: "Tables" }];
   const columnsDataGrid = [
     { field: "columnName", header: "Columns" },
-    { field: "alias", header: "AliasName" }
+    { field: "aliasName", header: "AliasName" }
   ];
-  const statusBodyTemplate = (rowData) => {
-    return <InputText
-      type="text"
-      className="p-inputtext-sm"
-      placeholder="Enter Alias Name"
-      value={rowData.alias}
-      onChange={(e) =>{
-        let value = e.target.value;
-        rowData.alias = value;
-      }} />;
-  };
-
-  const dimensionDetailsValidationSchema = Yup.object().shape({
+  const factDetailsValidationSchema = Yup.object().shape({
     factTables: Yup.array().min(2, "Select at least two tables."),
     factColumns: Yup.array().min(1, "Select at least one table."),
   });
 
   const handleSave = (values: Factdetails, formikHelpers: FormikHelpers<Factdetails>) => {
-    setDimensionDetails(values);
+    setFactdetails(values);
     setActiveIndex(activeIndex + 1);
+  }
+
+  const textEditor = (options) => {
+    return <InputText type="text" value={options.value} onChange={(e) => options.editorCallback(e.target.value)} />;
+  };
+
+  const onCellEditComplete = (e) => {
+    let { rowData, newValue, field, originalEvent: event } = e;
+    rowData[field] = newValue;
   }
 
   return (
     <>
       <Formik
-        initialValues={dimensionDetails}
+        initialValues={factDetails}
         onSubmit={(values, formikHelpers) => {
           handleSave(values, formikHelpers);
         }}
         enableReinitialize={true}
-        validationSchema={dimensionDetailsValidationSchema}
+        validationSchema={factDetailsValidationSchema}
       >
         {({
           values,
@@ -94,23 +94,30 @@ const DimensionPage: React.FC<FactTableProps> = ({
                       options={tables}
                       value={values.factTables}
                       onChange={(e) => {
-                        let currentTabels = e.target.value;
-                        let newMap : any = {};
-                        for(let g of currentTabels) {
-                          let tableName = g.tableName;
-                          newMap[tableName] = (dimensionDetails.selectedFactTables[tableName] || []).map(e => {
-                            let o = {...e};
-                            return o;
+                        let currentTables = e.target.value;
+                        let newMap: any = {};
+                        for (let currentTable of currentTables) {
+                          let tableName = currentTable.tableName;
+                          newMap[tableName] = (factDetails.selectedFactTables[tableName] || []).map(e => {
+                            return e;
                           });
                         }
-                        dimensionDetails.selectedFactTables = {...newMap};
-                        setFieldValue("selectedFactTables", dimensionDetails.selectedFactTables);
 
-                        let resetSelectedTableColumns = Object.keys(dimensionDetails.selectedFactTables).find(e => e == dimensionDetails.selectedFactTable.tableName);
-                        if(!resetSelectedTableColumns) {
+                        let oldKeys = Object.keys(factDetails.selectedFactTables);
+                        let newKeys = Object.keys(newMap);
+
+                        for(let key of oldKeys) {
+                          if(!newKeys.find(v => v == key)) {
+                            tables.find(v => v.tableName = key)?.columns.map(v => v.aliasName = "");
+                          }
+                        }
+
+                        factDetails.selectedFactTables = { ...newMap };
+                        setFieldValue("selectedFactTables", factDetails.selectedFactTables);
+                        let resetSelectedTableColumns = Object.keys(factDetails.selectedFactTables).find(e => e == factDetails.selectedFactTable.tableName);
+                        if (!resetSelectedTableColumns) {
                           setFieldValue("selectedFactTable", new TableMetaData());
                         }
-                        
                         handleChange(e);
                       }}
                       optionLabel="tableName"
@@ -133,7 +140,7 @@ const DimensionPage: React.FC<FactTableProps> = ({
                         selectionMode="single"
                         selection={values.selectedFactTable}
                         onSelectionChange={(e) => {
-                            setFieldValue("selectedFactTable", e.value);
+                          setFieldValue("selectedFactTable", e.value);
                         }}
                       >
                         {tablesDataGrid.map((column, index) => (
@@ -165,10 +172,10 @@ const DimensionPage: React.FC<FactTableProps> = ({
                   <div className="col-12">
                     <div>{getErrorMessageOnValidation(errors, touched, 'factColumns')}</div>
                   </div>
-                  {(values.factTables.length > 0) && (values.selectedFactTable.tableName)  ?
+                  {(values.factTables.length > 0) && (values.selectedFactTable.tableName) ?
                     <div className="col-12">
                       <DataTable
-                        value={[...values.selectedFactTable?.columns]}
+                        value={values.selectedFactTable?.columns}
                         dataKey="columnName"
                         metaKeySelection={true}
                         paginator
@@ -184,13 +191,13 @@ const DimensionPage: React.FC<FactTableProps> = ({
                         }}
                       >
                         <Column selectionMode="multiple" headerStyle={{ width: '3rem' }}></Column>
-                        {columnsDataGrid.map((column, index) => (
-                          <Column
-                            key={index}
-                            header={column.header}
-                            field={column.field}
-                            body={(rowData) => {
-                              if (column.field == "columnName") {
+                        {columnsDataGrid.map((column, index) => {
+                          if (column.field != 'aliasName') {
+                            return <Column
+                              key={index}
+                              header={column.header}
+                              field={column.field}
+                              body={(rowData) => {
                                 return (
                                   column.field.split(".").reduce((prev, current) => {
                                     let ele;
@@ -200,12 +207,24 @@ const DimensionPage: React.FC<FactTableProps> = ({
                                     return ele;
                                   }, rowData)
                                 )
-                              } else {
-                                return statusBodyTemplate(rowData);
-                              }
-                            }}
-                          />
-                        ))}
+                              }}
+                            />
+                          } else {
+                            return (<Column
+                              key={index}
+                              header={column.header}
+                              field={column.field}
+                              editor={(options) => column.field == 'aliasName' ? textEditor(options) : null}
+                              onCellEditComplete={(e) => {
+                                if (column.field === 'aliasName') {
+                                  onCellEditComplete(e);
+                                }
+                              }}
+                            />
+                            )
+                          }
+                        })
+                        }
                       </DataTable>
                     </div> :
                     <div className="col-12 grid justify-content-center align-content-center h-23rem p-5">
@@ -242,4 +261,4 @@ const DimensionPage: React.FC<FactTableProps> = ({
   );
 };
 
-export default DimensionPage;
+export default FactDetails;

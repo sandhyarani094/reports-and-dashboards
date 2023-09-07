@@ -15,6 +15,7 @@ const ComponentsPage = () => {
   const componentService = new ComponentService();
   const [CubesData, setCubesData] = useState([]);
   let [cubeId, setCubeId] = useState(null);
+  const [selectedOption, setSelectedOption] = useState(null);
   const [dimesionData, setDimensionData] = useState([]);
   const [dimesionId, setDimensionId] = useState(null);
   const [measureList, setMeasureList] = useState(items);
@@ -215,7 +216,7 @@ const ComponentsPage = () => {
             </div>
             <div className="col-12 px-0 pt-0">
               <ListBox
-                style={{ borderTopLeftRadius: "0" }}
+                style={{ borderTopLeftRadius: "0", borderTopRightRadius: "0" }}
                 value={selectedCity}
                 onChange={(e) => setSelectedCity(e.value)}
                 className="w-full"
@@ -230,7 +231,7 @@ const ComponentsPage = () => {
             </div>
             <div className="col-12 px-0 pt-0">
               <ListBox
-                style={{ borderTopLeftRadius: "0" }}
+                style={{ borderTopLeftRadius: "0", borderTopRightRadius: "0" }}
                 value={selectedCity}
                 onChange={(e) => setSelectedCity(e.value)}
                 options={items}
@@ -246,12 +247,19 @@ const ComponentsPage = () => {
             }}>
               <h6 className='m-0' style={{ color: 'black' }}>Charts</h6>
             </div>
+              <Dropdown
+                style={{ borderTopLeftRadius: '0', borderTopRightRadius: '0' }}
+                className='w-full'
+                placeholder='Select One'
+                options={dropdownOptions}
+                onChange={(e) => setSelectedOption(e.value)}
+                value={selectedOption}
+              />
+            </div>
           </div>
         </div>
       </div>
-    </div>
-
-  )
+      )
 }
 
-export default ComponentsPage
+      export default ComponentsPage

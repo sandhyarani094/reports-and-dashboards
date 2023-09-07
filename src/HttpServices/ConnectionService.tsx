@@ -1,6 +1,6 @@
 import { Connection } from "@/shared/constants/models/Connection";
-import { HttpService } from "./HttpService";
 import { AxiosResponse } from "axios";
+import { HttpService } from "./HttpService";
 
 export class ConnectionService {
   private BASE_URL = "connections";
