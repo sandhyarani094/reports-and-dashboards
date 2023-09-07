@@ -36,9 +36,6 @@ const MappingTablesPage: React.FC<DimensionMappingDetailProps> = ({
         formikHelpers.resetForm();
     }
 
-    console.log(dimensionDetails.selectedFactTables);
-    
-
     return (
         <div>
             <Formik
