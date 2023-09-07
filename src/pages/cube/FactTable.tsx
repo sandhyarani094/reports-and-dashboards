@@ -7,7 +7,7 @@ import {
 import {
   getErrorMessageOnValidation,
   isFormFieldInvalid,
-} from "@/shared/constants/services/utilService";
+} from "@/shared/constants/services/UtilService";
 import { Formik, Form, FormikHelpers } from "formik";
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";

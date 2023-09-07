@@ -13,8 +13,8 @@ import { showToaster } from "@/shared/constants/services/ToastService";
 import { Connection } from "@/shared/constants/models/Connection";
 import { ToastContext } from "@/common-layouts/context/toasterContext";
 import { Form, Formik } from "formik";
-import { getErrorMessageOnValidation, isFormFieldInvalid } from "@/shared/constants/services/utilService";
-import { ConnectionService } from "@/HttpServices/ConnectionService";
+import { getErrorMessageOnValidation, isFormFieldInvalid } from "@/shared/constants/services/UtilService";
+import { ConnectionService } from "@/httpServices/ConnectionService";
 
 const CreateConnectionPage = () => {
   const router = useRouter();

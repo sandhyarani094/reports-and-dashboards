@@ -13,7 +13,7 @@ import { RouterPath } from '@/shared/constants/router';
 import { Card } from 'primereact/card';
 import Link from 'next/link';
 import { BreadCrumb } from 'primereact/breadcrumb';
-import { getPathNames } from '@/shared/constants/services/utilService';
+import { getPathNames } from '@/shared/constants/services/UtilService';
 import { usePathname } from 'next/navigation';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';

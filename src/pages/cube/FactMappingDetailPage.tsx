@@ -4,7 +4,7 @@ import { Button } from "primereact/button";
 import { Formik, Form, FormikHelpers } from "formik";
 import { FactMappingData } from "@/shared/constants/models/Cube";
 import * as Yup from 'yup';
-import { getErrorMessageOnValidation, isFormFieldInvalid } from "@/shared/constants/services/utilService";
+import { getErrorMessageOnValidation, isFormFieldInvalid } from "@/shared/constants/services/UtilService";
 import { classNames } from "primereact/utils";
 import { ColumnMetaData, TableMetaData } from "@/shared/constants/models/TableMetaData";
 import { Column } from "primereact/column";

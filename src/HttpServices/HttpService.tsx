@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export class httpService {
+export class HttpService {
   private API_URL = process.env.NEXT_PUBLIC_CONNECTION_URL;
 
   public postRequest = async (path: string, data: any) => {

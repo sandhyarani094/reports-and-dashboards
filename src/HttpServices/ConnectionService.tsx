@@ -1,10 +1,10 @@
 import { Connection } from "@/shared/constants/models/Connection";
-import { httpService } from "./HttpService";
+import { HttpService } from "./HttpService";
 import { AxiosResponse } from "axios";
 
 export class ConnectionService {
   private BASE_URL = "connections";
-  private httpService = new httpService();
+  private httpService = new HttpService();
 
   public getAll = async () => {
     try {

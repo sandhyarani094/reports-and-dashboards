@@ -1,9 +1,9 @@
 import { AxiosResponse } from "axios";
-import { httpService } from "./HttpService";
+import { HttpService } from "./HttpService";
 
 export class ComponentService{
     private BASE_URL = "cubes";
-    private httpService = new httpService();
+    private httpService = new HttpService();
   
     public getAllCubes = async () => {
       try {

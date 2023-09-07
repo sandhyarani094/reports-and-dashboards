@@ -1,6 +1,6 @@
 import { MappingTable } from '@/shared/constants/models/Cube';
 import { ColumnMetaData } from '@/shared/constants/models/TableMetaData';
-import { isFormFieldInvalid, getErrorMessageOnValidation } from '@/shared/constants/services/utilService';
+import { isFormFieldInvalid, getErrorMessageOnValidation } from '@/shared/constants/services/UtilService';
 import { Formik, Form, FormikHelpers } from 'formik';
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
