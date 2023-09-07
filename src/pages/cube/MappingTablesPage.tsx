@@ -62,7 +62,7 @@ const MappingTablesPage: React.FC<DimensionMappingDetailProps> = ({
                                         ),
                                     })}
                                     placeholder="Choose One"
-                                    options={dimensionDetails.selectedFactTables}
+                                    // options={dimensionDetails.selectedFactTables}
                                     optionLabel="columnName"
                                     onChange={handleChange}
                                     value={values.factColumn}

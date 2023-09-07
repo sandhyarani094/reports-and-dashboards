@@ -106,7 +106,7 @@ const CubePage = () => {
           model={tabs}
           activeIndex={activeIndex}
           onSelect={(e) => setActiveIndex(e.index)}
-          readOnly={false}
+          readOnly={true}
         />
         <div className="col-12 p-5">{tabs[activeIndex].content}</div>
       </div>
